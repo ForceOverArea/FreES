@@ -16,12 +16,14 @@ FrEES can solve systems of equations easily so long as the variable being sought
 For example... 
 
 y = 5
+
 x = y + 2
 
 Would return the solution y = 5, x = 7. For cases where this is not practical, instruct FrEES to solve by iteration/estimation:
 For example...
 
 y = 60
+
 y = x**5 + 7 * x + 6 !guess x 0 10
 
 Will estimate the x required to (almost) satisfy the system on the domain 0 < x < 10. (From the syntax: !guess x 0 10)
