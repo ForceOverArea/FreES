@@ -1,4 +1,4 @@
-# FrEES
+# FreES
 A stab at making a free, open source equation solving program.
 
 # Objectives
