@@ -1,1 +1,0 @@
-py .\frees\main.py
