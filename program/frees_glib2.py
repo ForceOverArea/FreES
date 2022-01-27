@@ -1,5 +1,6 @@
 # FreES GUI toolkit library. Version 2
- 
+
+from time import sleep
 from frees_lib2 import frees, f_range
 from matplotlib import pyplot as plt
 from os import system as sh
@@ -99,7 +100,7 @@ class solution_window:
         self.window.title("FreES - Solution Window")
         self.window.minsize(200,200)
 
-        soln = frees(parent.fetch_eqns())
+        soln = frees(self.parent.fetch_eqns())
         soln.solve()
         
         duration = f"Solved in {round(soln.soln.duration, 5)} seconds."
@@ -116,7 +117,6 @@ class solution_window:
         self.titlebar       .grid(column = 0, row = 0)
         self.swtext         .grid(column = 0, row = 1, padx = 10, pady = 10)
         self.close_button   .grid(column = 0, row = 2)
-
 
 
     def close(self):
@@ -185,7 +185,25 @@ class plot_window:
             float(self.dmn_end.get()), 
             int(self.dmn_size.get())
             )
-        
+        y = []
+        pb = prog_bar(int(self.dmn_size.get()))
+
+        self.plot_button.configure(text=pb.show())
+        for x in domain:
+            eqns = self.parent.fetch_eqns()
+            system = frees(eqns.replace(self.ind_var.get(), str(x)))
+            system.solve()
+            y.append(system.soln.soln[self.dep_var.get()])
+            
+            pb.increment()
+            self.plot_button.configure(text = pb.show())
+            self.plot_button.update_idletasks()
+
+        self.plot_button.configure(text="Create Plot")
+        plt.plot(domain, y)
+        plt.title(self.title.get())
+        plt.show()
+
 
 class prog_bar:
     """Generates a progress bar similar to the zypper package manager's."""
@@ -196,7 +214,7 @@ class prog_bar:
 
     def increment(self, amount=1):
         self.progress += amount
-        if self.wheel == 11:
+        if self.wheel == 15:
             self.wheel = 0
         else: 
             self.wheel += 1
@@ -206,29 +224,33 @@ class prog_bar:
         proportion = int(length*self.progress/self.max_prog)
 
         c = int(proportion*100/length)
-        p = proportion + 3-len(str(c))
+        p = proportion + 1-len(str(c))
         f = length - proportion
 
-        present = f'<{c}%>'
-        past = '-' * p
+        if show_wheel:
+            wheel = ['/','/','/','/','-','-','-','-','\\','\\','\\','\\','|','|','|','|'][self.wheel]
+
+        present = f'({wheel})'
+        past = '=' * p
         future = '=' * f
 
-        if show_wheel:
-            wheel = ['/','/','/','-','-','-','\\','\\','\\','|','|','|'][self.wheel]
-
-        state = f"[{past}{present}{future}] {wheel}"
+        state = f"|{past}{present}{future}| {int(self.progress)}/{self.max_prog} [{c}%]"
         
-        stdout.write(state)
-        stdout.flush()
-        stdout.write("\b"*len(state))
+        # stdout.write(state)
+        # stdout.flush()
+        # stdout.write("\b"*len(state))
+
+        return state
+
+        
 
 
-frees_app(".").start()
-
-
-# Progressbar demo
-# myBar = prog_bar(99)
-# for i in range(100):
-#     myBar.increment()
+frees_app("..").start()
+# myBar = prog_bar(1000)
+# for i in range(1000):
 #     myBar.show()
-#     sleep(0.05)
+#     i += 1
+#     myBar.increment()
+#     sleep(0.005)
+# myBar.show()
+

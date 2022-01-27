@@ -19,7 +19,12 @@ class soln:
         self.duration = duration  
 
 
-def iter_solve(expr:str, y_actual:float, var="x", vals={},  guess_l=-1E20, guess_r=1E20,  percent_err=1E-6, steps=8):
+def f_range(start, stop, steps=8):
+    step_size = (stop - start) / steps - 1
+    return [start + step_size * i for i in range(steps)]
+
+
+def iter_solve(func:str, condition:float, var="x", vals={}, left_search_bound=-1E20, right_search_bound=1E20, target_dx=1E-20, steps=8):
     """A more declarative approach to iterative solving. Approximately 4-5x slower than 'iter_solve', but much easier to understand."""
 
     start = time()
@@ -28,27 +33,25 @@ def iter_solve(expr:str, y_actual:float, var="x", vals={},  guess_l=-1E20, guess
         myDict.update(newDict)
         return myDict
 
-    def f(x): return eval(expr, uar(vals, {var: x}))
-    def err(x): return abs(f(x) - y_actual)
+    def f(x): return eval(func, uar(vals, {var: x}))
+    def e(x): return abs(f(x) - condition)
 
-    x = guess_l # start at left end of domain
-    dx = (guess_l - guess_r) / steps
+    x = left_search_bound
+    dx = (left_search_bound - right_search_bound) / steps
+    
+    while abs(dx) > target_dx:
 
-    cpe = 1
-    while cpe > percent_err:
-
-        while err(x) > err(x + dx):
+        while e(x + dx) < e(x):
             x += dx
-            cpe = 100 * err(x) / abs(y_actual) # current percent error
 
         x += dx # go to the next point
-
         dx *= -2 / steps
 
-    return soln({var: x}, time()-start, percent_err=cpe)
+    x += dx * steps / -2
+    return soln({var: x}, time()-start, percent_err=100*abs(f(x)-condition)/condition)
 
 
-def solve_line(line:str, vals={}, percent_err=1E-6):
+def solve_line(line:str, vals={}, target_dx=1E-20):
     """Parse an equation as a string and solve for a single unknown variable after subbing in known values."""
     start = time()
 
@@ -74,20 +77,20 @@ def solve_line(line:str, vals={}, percent_err=1E-6):
     
     elif len(lhs) == 1 and len(rhs) == 0:
         return iter_solve(
-            expr = exprs[0],
-            y_actual = eval(exprs[1], vals),
+            func = exprs[0],
+            condition = eval(exprs[1], vals),
             var = lhs[0],
             vals = vals,
-            percent_err = percent_err
+            target_dx = target_dx
         )
 
     elif len(rhs) == 1 and len(lhs) == 0:
         return iter_solve(
-            expr = exprs[1],
-            y_actual = eval(exprs[0], vals),
+            func = exprs[1],
+            condition = eval(exprs[0], vals),
             var = rhs[0],
             vals = vals,
-            percent_err = percent_err
+            target_dx = target_dx
         )
 
     else:
@@ -97,7 +100,7 @@ def solve_line(line:str, vals={}, percent_err=1E-6):
 class frees:
     "FreES engine for solving systems of equations."
 
-    def __init__(self, exprs:str, precision=1E-6):
+    def __init__(self, exprs:str, precision=1E-20):
         self.exprs = exprs
         self.lines = exprs.strip().split("\n")
         self.unsolved = []
@@ -114,7 +117,7 @@ class frees:
             
             for line in self.lines:
                 line_number = self.lines.index(line) + 1
-                line_soln = solve_line(line, self.soln.soln, percent_err=self.precision)
+                line_soln = solve_line(line, self.soln.soln, target_dx=self.precision)
 
                 if line_soln != None:
                     self.soln.soln.update(line_soln.soln)
