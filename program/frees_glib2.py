@@ -69,7 +69,7 @@ class frees_app:
 
     def open_file_select(self):
         """Open a file to edit in the FreES editor."""
-        self.current_file = askopenfilename(initialdir = "..")
+        self.current_file = askopenfilename(initialdir = "~/Documents")
         self.label.configure(text = "Editing: " + self.current_file)
         self.exprs_box.delete("0.0",END)
         self.exprs_box.insert(END, self.open_file())
@@ -186,7 +186,7 @@ class plot_window:
             int(self.dmn_size.get())
             )
         y = []
-        pb = prog_bar(int(self.dmn_size.get()))
+        pb = prog_bar(int(self.dmn_size.get()), style="basic")
 
         self.plot_button.configure(text=pb.show())
         for x in domain:
@@ -208,6 +208,7 @@ class plot_window:
 class prog_bar:
     """Generates a progress bar similar to the zypper package manager's."""
     def __init__(self, max_prog:int, style="basic"):
+        self.style = style
         self.progress = 0.0
         self.max_prog = max_prog
         self.wheel = 0
@@ -223,7 +224,7 @@ class prog_bar:
     def show(self, length=40, show_wheel=True):
         proportion = int(length*self.progress/self.max_prog)
 
-        c = int(proportion*100/length)
+        c = int(100*self.progress/self.max_prog)
         p = proportion + 1-len(str(c))
         f = length - proportion
 
@@ -231,26 +232,12 @@ class prog_bar:
             wheel = ['/','/','/','/','-','-','-','-','\\','\\','\\','\\','|','|','|','|'][self.wheel]
 
         present = f'({wheel})'
-        past = '=' * p
-        future = '=' * f
+        past = '|' * p
+        future = '.' * f
 
-        state = f"|{past}{present}{future}| {int(self.progress)}/{self.max_prog} [{c}%]"
-        
-        # stdout.write(state)
-        # stdout.flush()
-        # stdout.write("\b"*len(state))
+        state = f"[{past}{present}{future}] {int(self.progress)}/{self.max_prog} [{c}%]"
 
         return state
-
         
 
-
-frees_app("..").start()
-# myBar = prog_bar(1000)
-# for i in range(1000):
-#     myBar.show()
-#     i += 1
-#     myBar.increment()
-#     sleep(0.005)
-# myBar.show()
-
+frees_app("~\\Documents").start()

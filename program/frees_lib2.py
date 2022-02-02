@@ -4,7 +4,7 @@
 # This version is specifically intended for 
 # development purposes with (ideally) more
 # declarative programming even at the cost of 
-# a slight performance drop.
+# performance drops.
 
 
 from re import findall, IGNORECASE
@@ -20,7 +20,7 @@ class soln:
 
 
 def f_range(start, stop, steps=8):
-    step_size = (stop - start) / steps - 1
+    step_size = (stop - start) / (steps - 1)
     return [start + step_size * i for i in range(steps)]
 
 
@@ -30,6 +30,7 @@ def iter_solve(func:str, condition:float, var="x", vals={}, left_search_bound=-1
     start = time()
 
     def uar(myDict:dict, newDict:dict):
+        """Stands for 'update and return'"""
         myDict.update(newDict)
         return myDict
 
@@ -137,4 +138,4 @@ class frees:
                 if '__builtins__' in self.soln.soln: 
                     del self.soln.soln['__builtins__']
                 
-                solution_in_progress = False 
+                solution_in_progress = False
