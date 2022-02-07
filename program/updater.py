@@ -7,6 +7,10 @@ def fchk():
     change = {}
 
     for file in listdir():
+
+        if file == "__pycache__":
+            continue
+        
         with open(file, 'r') as f:
             current = f.read()
             latest = get(f"https://github.com/ForceOverArea/FreES/raw/main/program/{file}").text
@@ -22,7 +26,18 @@ def sync():
 
     updates = fchk()
 
-    for file in updates:
-        with open(file, 'w') as f:
-            f.write(updates[file])
-        
+    confirm = input(f"The following files will be synced with Github: {updates.keys()}\n\nDo you still wish to proceed? ['NO'/'yes']")
+
+   
+
+    if confirm == "yes":
+        print("Syncing files...")
+        for file in updates:
+            with open(file, 'w') as f:
+                f.write(updates[file])
+        print("Done.")
+
+    else:
+        print("Cancelled operation.")
+            
+sync()
