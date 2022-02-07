@@ -9,6 +9,8 @@
 
 from re import findall, IGNORECASE
 from time import time
+from json import load
+from math import sin, cos, tan, sinh, cosh, tanh, asin, acos, atan, log10, log, exp
 
 
 class soln:
@@ -22,6 +24,41 @@ class soln:
 def f_range(start, stop, steps=8):
     step_size = (stop - start) / (steps - 1)
     return [start + step_size * i for i in range(steps)]
+
+
+def convert(from_unit:str, to_unit:str):
+    """Return a conversion factor between two units."""
+
+    with open("units.json","r") as f:
+        factors = load(f)
+
+    for cat in factors:
+        print(factors[cat])
+        if from_unit in factors[cat] and to_unit in factors[cat]:
+            print(cat)
+            unit_set = factors[cat]
+
+    return unit_set[from_unit]/unit_set[to_unit]
+
+
+def default_function_toolkit():
+    """Returns the default functions to be recognized by FreES."""
+
+    return {
+        "sin":sin,
+        "cos":cos,
+        "tan":tan,
+        "sinh":sinh,
+        "cosh":cosh,
+        "tanh":tanh,
+        "asin":asin,
+        "acos":acos,
+        "atan":atan,
+        "log":log10,
+        "ln":log,
+        "exp":exp,
+        "convert":convert
+    }
 
 
 def iter_solve(func:str, condition:float, var="x", vals={}, left_search_bound=-1E20, right_search_bound=1E20, target_dx=1E-20, steps=8):
@@ -60,20 +97,29 @@ def solve_line(line:str, vals={}, target_dx=1E-20):
         """'Variable finder'. Returns a list of variables in an expression"""
         found_vars = []
         for var in findall("[a-z]+", expr, IGNORECASE):
+            
             if var not in vals and var not in found_vars:
                 found_vars.append(var)
+                
         return found_vars
     
-    if line.lstrip().startswith("#"): return None # line is a comment, don't solve.
+    if line.lstrip().startswith("#"):
+        print(f"Skipping commented line... {line}")
+        return None # line is a comment, don't solve.
+        
 
     exprs = line.split("=")
     
-    if len(exprs) < 2: return None # line is not an equation, stop solving.
-    
+    if len(exprs) < 2:
+        print(f"Skipping non-equation line... {line}")
+        return None # line is not an equation, stop solving.
+        
+        
     lhs = vf(exprs[0])
     rhs = vf(exprs[1])
     
     if len(lhs) > 1 or len(rhs) > 1:
+        print(f"Skipping unsolvable line... (Too many unknowns) {line}")
         return None # line is unsolvable due to too many unknowns.
     
     elif len(lhs) == 1 and len(rhs) == 0:
@@ -106,7 +152,7 @@ class frees:
         self.lines = exprs.strip().split("\n")
         self.unsolved = []
         self.precision = precision
-        self.soln = soln({}, 0, percent_err=0.0)
+        self.soln = soln(default_function_toolkit(), 0, percent_err=0.0)
         self.iter_solve = iter_solve
 
 
