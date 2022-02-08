@@ -1,6 +1,8 @@
 # FreES GUI toolkit library. Version 2
 
+from platform import platform
 from time import sleep
+import warnings
 from frees_lib2 import frees, f_range
 from matplotlib import pyplot as plt
 from os import system as sh
@@ -22,7 +24,7 @@ class frees_app:
         Grid.rowconfigure(self.window, 1, weight=1)
         Grid.columnconfigure(self.window, 0, weight=1)
 
-        numcols = 5 # Hard-coded here to parametrize later code.
+        numcols =  6 # Hard-coded here to parametrize later code.
 
         self.exprs_box = ScrolledText(self.window)
         self.exprs_box.grid(columnspan=numcols, column=0, row=1, padx=10, pady=10, sticky="nsew")
@@ -31,6 +33,7 @@ class frees_app:
         self.solve_button = Button(self.window, text = "Save/Solve",     command = self.open_solution_window)     # Solve Button 
         self.fs_button =    Button(self.window, text = "Open",           command = self.open_file_select)        # File Selection
         self.save_button =  Button(self.window, text = "Save",           command = self.save_file)               # Save Button
+        self.saveas_button =Button(self.window, text = "Save As...",     command = self.open_saveas_window)
         self.plot_button =  Button(self.window, text = "New Plot",       command = self.open_plot_window)   # Plot Button
         self.unit_button =  Button(self.window, text = "Edit Unit Info", command = self.edit_unit_config)         # Edit Units Button
         self.label =        Label( self.window, text = "No File Selected")                                  # Label showing current file
@@ -38,8 +41,9 @@ class frees_app:
         self.solve_button   .grid(column = 0, row = 0, sticky="ew")
         self.fs_button      .grid(column = 1, row = 0)
         self.save_button    .grid(column = 2, row = 0)
-        self.plot_button    .grid(column = 3, row = 0)
-        self.unit_button    .grid(column = 4, row = 0)
+        self.saveas_button  .grid(column = 3, row = 0)
+        self.plot_button    .grid(column = 4, row = 0)
+        self.unit_button    .grid(column = 5, row = 0)
         self.label          .grid(columnspan = numcols, row = 2)
 
 
@@ -69,7 +73,7 @@ class frees_app:
 
     def open_file_select(self):
         """Open a file to edit in the FreES editor."""
-        self.current_file = askopenfilename(initialdir = "~/Documents")
+        self.current_file = askopenfilename(initialdir = "..") # "~/Documents")
         self.label.configure(text = "Editing: " + self.current_file)
         self.exprs_box.delete("0.0",END)
         self.exprs_box.insert(END, self.open_file())
@@ -77,7 +81,10 @@ class frees_app:
 
     def edit_unit_config(self):
         """Edit the units.json file."""
-        sh("nano ./units.json")
+        try:
+            sh("notepad ./config/units.json")
+        except:
+            sh("nano ./config/units.json")
 
 
     def save_file(self):
@@ -86,13 +93,46 @@ class frees_app:
             f.write(self.fetch_eqns())
 
 
+    def open_saveas_window(self):
+        """Write the current editor window's contents to a given filepath."""
+        saw = save_as_window(self)
+        saw.window.mainloop()
+
+
     def start(self):
         self.exprs_box.focus()
         self.window.mainloop()
 
-        
+
+class save_as_window:
+    """Window for creating files from withing FreES."""
+
+    def __init__(self, parent):
+        self.window = Toplevel()
+        self.parent = parent
+        self.window.title("FreES - Save File As...")
+        self.window.minsize(200,100)
+
+        self.new_filename = StringVar()
+
+        self.filename_label =   Label(self.window, text = "File Name: ")
+        self.name_box =         Entry(self.window, textvariable = self.new_filename)
+        self.saveas_button =    Button(self.window, text = "Save", command = self.save_as)
+
+        self.filename_label .grid(row = 0, column = 0)
+        self.name_box       .grid(row = 0, column = 1, pady = 10)
+        self.saveas_button  .grid(row = 1, columnspan = 2)
+
+
+    def save_as(self):
+        """Save a file to a given destination."""
+        with open("../" + self.name_box.get(), "w") as f:
+            f.write(self.parent.fetch_eqns())
+        self.window.destroy()
+
+
 class solution_window:
-    """Window for displaying solution"""
+    """Window for displaying solution."""
 
     def __init__(self, parent:frees_app):
         self.window = Toplevel()
@@ -105,10 +145,10 @@ class solution_window:
         
         duration = f"Solved in {round(soln.soln.duration, 5)} seconds."
         values = '\n'.join([f"{item} = {soln.soln.soln[item]}" for item in soln.soln.soln])
-        unsolved = ', '.join([f"Line {i}" for i in soln.unsolved])
+        warnings = '\n'.join(soln.warnings)
         
         # TODO: add the unsolved lines warning once it is fixed in frees_lib2.py
-        soln_text = f"{duration}\n\n{values}" #\n\nUnsolved: {unsolved}"
+        soln_text = f"{duration}\n\n{values}\n\n{warnings}" #\n\nUnsolved: {unsolved}"
 
         self.titlebar = Label(self.window, text = "Solution:\n=========")
         self.swtext = Label(self.window, text = soln_text)
@@ -213,6 +253,7 @@ class prog_bar:
         self.max_prog = max_prog
         self.wheel = 0
 
+
     def increment(self, amount=1):
         self.progress += amount
         if self.wheel == 15:
@@ -231,7 +272,7 @@ class prog_bar:
         if show_wheel:
             wheel = ['/','/','/','/','-','-','-','-','\\','\\','\\','\\','|','|','|','|'][self.wheel]
 
-        present = f'({wheel})'
+        present = f'( {wheel} )'
         past = '|' * p
         future = '.' * f
 

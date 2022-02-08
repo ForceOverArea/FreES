@@ -33,9 +33,7 @@ def convert(from_unit:str, to_unit:str):
         factors = load(f)
 
     for cat in factors:
-        print(factors[cat])
         if from_unit in factors[cat] and to_unit in factors[cat]:
-            print(cat)
             unit_set = factors[cat]
 
     return unit_set[from_unit]/unit_set[to_unit]
@@ -61,15 +59,22 @@ def default_function_toolkit():
     }
 
 
+def default_constant_toolkit():
+    """Returns a dict of the constants recognized by FreES."""
+    with open("units.json", "r") as f:
+        return load(f)["CONSTANTS"]
+
+
+def uar(myDict:dict, newDict:dict):
+        """Stands for 'update and return'"""
+        myDict.update(newDict)
+        return myDict
+
+
 def iter_solve(func:str, condition:float, var="x", vals={}, left_search_bound=-1E20, right_search_bound=1E20, target_dx=1E-20, steps=8):
     """A more declarative approach to iterative solving. Approximately 4-5x slower than 'iter_solve', but much easier to understand."""
 
     start = time()
-
-    def uar(myDict:dict, newDict:dict):
-        """Stands for 'update and return'"""
-        myDict.update(newDict)
-        return myDict
 
     def f(x): return eval(func, uar(vals, {var: x}))
     def e(x): return abs(f(x) - condition)
@@ -91,36 +96,33 @@ def iter_solve(func:str, condition:float, var="x", vals={}, left_search_bound=-1
 
 def solve_line(line:str, vals={}, target_dx=1E-20):
     """Parse an equation as a string and solve for a single unknown variable after subbing in known values."""
-    start = time()
 
     def vf(expr:str):
         """'Variable finder'. Returns a list of variables in an expression"""
         found_vars = []
+        strings = findall(r"'([^']*)'", expr)
+
         for var in findall("[a-z]+", expr, IGNORECASE):
             
-            if var not in vals and var not in found_vars:
+            # candidate has been solved, candidate is not a string, do not repeat variables
+            if var not in vals and var not in strings and var not in found_vars:
                 found_vars.append(var)
                 
         return found_vars
     
     if line.lstrip().startswith("#"):
-        print(f"Skipping commented line... {line}")
-        return None # line is a comment, don't solve.
-        
+        return None
 
     exprs = line.split("=")
     
     if len(exprs) < 2:
-        print(f"Skipping non-equation line... {line}")
         return None # line is not an equation, stop solving.
-        
         
     lhs = vf(exprs[0])
     rhs = vf(exprs[1])
     
-    if len(lhs) > 1 or len(rhs) > 1:
-        print(f"Skipping unsolvable line... (Too many unknowns) {line}")
-        return None # line is unsolvable due to too many unknowns.
+    if len(lhs) > 1 or len(rhs) > 1 or (len(lhs) == 1 and len(rhs) == 1):
+        return f"Skipped unsolvable line due to too many unknowns: \n   {line}" # line is unsolvable due to too many unknowns.
     
     elif len(lhs) == 1 and len(rhs) == 0:
         return iter_solve(
@@ -145,15 +147,21 @@ def solve_line(line:str, vals={}, target_dx=1E-20):
 
 
 class frees:
-    "FreES engine for solving systems of equations."
+    """FreES engine for solving systems of equations."""
 
-    def __init__(self, exprs:str, precision=1E-20):
+    def __init__(self, exprs:str, precision=1E-20, toolkit={}):
         self.exprs = exprs
-        self.lines = exprs.strip().split("\n")
-        self.unsolved = []
+
+        for const in default_constant_toolkit():
+            self.exprs = self.exprs.replace(const, default_constant_toolkit()[const][1])
+        
+        print(f"SYSTEM:\n{self.exprs}")
+        self.lines = self.exprs.strip().split("\n")
         self.precision = precision
-        self.soln = soln(default_function_toolkit(), 0, percent_err=0.0)
         self.iter_solve = iter_solve
+        self.toolkit = uar(default_function_toolkit(), toolkit)
+        self.soln = soln({}, 0, percent_err=0.0)
+        self.warnings = []
 
 
     def solve(self):
@@ -161,27 +169,24 @@ class frees:
         
         while solution_in_progress:
             number_of_known_values = len(self.soln.soln)
+            self.warnings = []
             
             for line in self.lines:
                 line_number = self.lines.index(line) + 1
-                line_soln = solve_line(line, self.soln.soln, target_dx=self.precision)
+                line_soln = solve_line(line, uar(self.soln.soln, self.toolkit), target_dx=self.precision)
 
-                if line_soln != None:
+                if type(line_soln) == str:
+                    print(f"WARNING: {line_soln}")
+                    self.warnings.append(line_soln)
+
+                elif line_soln != None:
                     self.soln.soln.update(line_soln.soln)
                     self.soln.duration += line_soln.duration
 
                     if line_soln.percent_err > self.soln.percent_err: 
                         self.soln.percent_err = line_soln.percent_err 
-
-                    if line_number in self.unsolved:
-                        self.unsolved.remove(line_number)
-                
-                else:
-                    self.unsolved.append(line_number)
-                    continue
             
             if len(self.soln.soln) == number_of_known_values: # no new solutions have been found this loop, so break and report results.
-                if '__builtins__' in self.soln.soln: 
-                    del self.soln.soln['__builtins__']
+                self.soln.soln = {item : self.soln.soln[item] for item in self.soln.soln if item not in self.toolkit.keys() and item != '__builtins__'}
                 
                 solution_in_progress = False
