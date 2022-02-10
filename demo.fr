@@ -1,0 +1,39 @@
+# This is a demo file to demonstrate the functionality of FreES.
+
+# Notice how FreES will solve for 'x' even though only 'y' is known:
+
+y = 90
+y = x^3 + x + 5
+
+# Also notice how 'r' and 'h' can be found in a similar 
+# way, even though 'c' is not declared until the next line:
+
+c = r^7 + r^5 + 6
+h = c + r
+x = c
+
+# FreES uses the python interpreter for calculations,
+# so both '^' notation and '**' notation work. '^' is 
+# subbed for '**' when you hit 'save/solve'
+
+n = h^3
+ne = h**3
+
+# FreES has a built-in function for unit conversion.
+# use single quotes to denote the desired units as 
+# strings.
+
+inch = 2.54 * convert('cm','in')
+
+# FreES also has a library of common constants. Use an
+# ampersand to denote a constant
+pi = &pi
+g = &g
+
+deg = (2*&pi) * convert('rad','deg')
+
+# FreES will solve a system to the best of its ability,
+# but may be unable to solve some expressions. Notice the 
+# error that appears in the solution window on solving:
+
+unsolvable = line
