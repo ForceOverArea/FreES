@@ -163,7 +163,7 @@ def solve_line(line:str, vals={}, target_dx=1E-20):
         else:
             bounds = [-1E20, 1E20]
 
-        return iter_solve2(
+        return iter_solve(
             func = exprs[0],
             condition = eval(exprs[1].split("!")[0], vals),
             var = lhs[0],
@@ -182,7 +182,7 @@ def solve_line(line:str, vals={}, target_dx=1E-20):
         else:
             bounds = [-1E20, 1E20]
 
-        return iter_solve2(
+        return iter_solve(
             func = exprs[1].split("!")[0],
             condition = eval(exprs[0], vals),
             var = rhs[0],
