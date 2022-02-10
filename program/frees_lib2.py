@@ -71,7 +71,7 @@ def uar(myDict:dict, newDict:dict):
         return myDict
 
 
-def iter_solve(func:str, condition:float, var="x", vals={}, left_search_bound=-1E20, right_search_bound=1E20, target_dx=1E-20, steps=8):
+def iter_solve(func:str, condition:float, var="x", vals={}, left_search_bound=1E20, right_search_bound=-1E20, target_dx=1E-20, steps=8):
     """A more declarative approach to iterative solving. Approximately 4-5x slower than 'iter_solve', but much easier to understand."""
 
     start = time()
@@ -80,7 +80,7 @@ def iter_solve(func:str, condition:float, var="x", vals={}, left_search_bound=-1
     def e(x): return abs(f(x) - condition)
 
     x = left_search_bound
-    dx = (left_search_bound - right_search_bound) / steps
+    dx = abs((left_search_bound - right_search_bound) / steps)
     
     while abs(dx) > target_dx:
 
@@ -92,6 +92,35 @@ def iter_solve(func:str, condition:float, var="x", vals={}, left_search_bound=-1
 
     x += dx * steps / -2
     return soln({var: x}, time()-start, percent_err=100*abs(f(x)-condition)/condition)
+
+
+def iter_solve2(func:str, condition:float, var="x", vals={}, left_search_bound=1E20, right_search_bound=-1E20, target_dx=1E-20, steps=8):
+    """A more declarative approach to iterative solving. Approximately 4-5x slower than 'iter_solve', but much easier to understand."""
+
+    start = time()
+
+    def f(x): return eval(func, uar(vals, {var: x}))
+    def e(x): return abs(f(x) - condition)
+    def ime(some_list): return some_list.index(min(some_list))
+
+    dmn = f_range(left_search_bound, right_search_bound, steps)
+    crit_index = ime([e(x) for x in dmn[1:-2]])
+    dx = abs(dmn[0]-dmn[1])
+    
+    if dx > target_dx:
+        return iter_solve2(
+            func = func, 
+            condition = condition,
+            var = var,
+            vals = vals,
+            left_search_bound = dmn[crit_index-1],
+            right_search_bound = dmn[crit_index+1],
+            target_dx = target_dx,
+            steps = steps
+            )
+    else:
+        x = dmn[crit_index]
+        return soln({var: x}, time()-start, percent_err=100*abs(f(x)-condition)/condition)
 
 
 def solve_line(line:str, vals={}, target_dx=1E-20):
@@ -119,26 +148,47 @@ def solve_line(line:str, vals={}, target_dx=1E-20):
         return None # line is not an equation, stop solving.
         
     lhs = vf(exprs[0])
-    rhs = vf(exprs[1])
+    rhs = vf(exprs[1].split("!")[0].split("#")[0])
     
     if len(lhs) > 1 or len(rhs) > 1 or (len(lhs) == 1 and len(rhs) == 1):
         return f"Skipped unsolvable line due to too many unknowns: \n   {line}" # line is unsolvable due to too many unknowns.
     
+
     elif len(lhs) == 1 and len(rhs) == 0:
-        return iter_solve(
+    
+        if "!bounds" in line:
+            bounds = line.split("!bounds")[1].strip().split()
+            print(f"Solving {line} for {lhs[0]} with bounds {bounds}")
+
+        else:
+            bounds = [-1E20, 1E20]
+
+        return iter_solve2(
             func = exprs[0],
-            condition = eval(exprs[1], vals),
+            condition = eval(exprs[1].split("!")[0], vals),
             var = lhs[0],
             vals = vals,
+            left_search_bound = float(bounds[0]),
+            right_search_bound = float(bounds[1]),
             target_dx = target_dx
         )
 
     elif len(rhs) == 1 and len(lhs) == 0:
-        return iter_solve(
-            func = exprs[1],
+
+        if "!bounds" in line:
+            bounds = line.split("!bounds")[1].strip().split()
+            print(f"Solving {line} for {rhs[0]} with bounds {bounds}")
+
+        else:
+            bounds = [-1E20, 1E20]
+
+        return iter_solve2(
+            func = exprs[1].split("!")[0],
             condition = eval(exprs[0], vals),
             var = rhs[0],
             vals = vals,
+            left_search_bound = float(bounds[0]),
+            right_search_bound = float(bounds[1]),
             target_dx = target_dx
         )
 

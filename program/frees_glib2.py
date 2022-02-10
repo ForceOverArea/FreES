@@ -4,9 +4,9 @@ from platform import platform
 from time import sleep
 import warnings
 from frees_lib2 import frees, f_range
+from json import load
 from matplotlib import pyplot as plt
 from os import system as sh
-from sys import stdout
 from tkinter import * 
 from tkinter.filedialog import askopenfilename
 from tkinter.scrolledtext import ScrolledText
@@ -24,7 +24,7 @@ class frees_app:
         Grid.rowconfigure(self.window, 1, weight=1)
         Grid.columnconfigure(self.window, 0, weight=1)
 
-        numcols =  6 # Hard-coded here to parametrize later code.
+        numcols = 6 # Hard-coded here to parametrize later code.
 
         self.exprs_box = ScrolledText(self.window)
         self.exprs_box.grid(columnspan=numcols, column=0, row=1, padx=10, pady=10, sticky="nsew")
@@ -57,10 +57,10 @@ class frees_app:
         with open(self.current_file, "r") as f:
             return f.read()
 
-    # methods below this line are called by the GUI itself. 
-
+    # methods below this line are called by the GUI itself.
     def open_solution_window(self):
         """Show the solution to the current system."""
+        self.save_file()
         sw = solution_window(self)
         sw.window.mainloop()
 
@@ -73,7 +73,11 @@ class frees_app:
 
     def open_file_select(self):
         """Open a file to edit in the FreES editor."""
-        self.current_file = askopenfilename(initialdir = "..") # "~/Documents")
+        fp_to_open = askopenfilename(initialdir = "..", filetypes=(("FreES files", "*.fr*"), ("All files", "*.*"))) # "~/Documents")
+        
+        if fp_to_open != "":
+            self.current_file = fp_to_open
+
         self.label.configure(text = "Editing: " + self.current_file)
         self.exprs_box.delete("0.0",END)
         self.exprs_box.insert(END, self.open_file())
@@ -81,10 +85,10 @@ class frees_app:
 
     def edit_unit_config(self):
         """Edit the units.json file."""
-        try:
-            sh("notepad ./config/units.json")
-        except:
-            sh("nano ./config/units.json")
+        with open("settings.json", "r") as f:
+            text_editor = load(f)["TEXT_EDITOR"]
+        sh(f"{text_editor} ./units.json")
+
 
 
     def save_file(self):
@@ -111,7 +115,7 @@ class save_as_window:
         self.window = Toplevel()
         self.parent = parent
         self.window.title("FreES - Save File As...")
-        self.window.minsize(200,100)
+        self.window.minsize(200,50)
 
         self.new_filename = StringVar()
 
@@ -120,14 +124,19 @@ class save_as_window:
         self.saveas_button =    Button(self.window, text = "Save", command = self.save_as)
 
         self.filename_label .grid(row = 0, column = 0)
-        self.name_box       .grid(row = 0, column = 1, pady = 10)
-        self.saveas_button  .grid(row = 1, columnspan = 2)
+        self.name_box       .grid(row = 0, column = 1, pady = 10, sticky = "ew")
+        self.saveas_button  .grid(row = 1, columnspan = 2, sticky = "ew")
 
 
     def save_as(self):
         """Save a file to a given destination."""
-        with open("../" + self.name_box.get(), "w") as f:
+        new_filename = "../" + self.name_box.get() + ".fr"
+        with open(new_filename, "w") as f:
             f.write(self.parent.fetch_eqns())
+
+        self.parent.current_file = new_filename
+        self.parent.label.configure(text = "Editing: " + self.parent.current_file)
+        
         self.window.destroy()
 
 
@@ -139,12 +148,16 @@ class solution_window:
         self.parent = parent
         self.window.title("FreES - Solution Window")
         self.window.minsize(200,200)
+        self.window.resizable(0, 0)
+
+        with open("settings.json","r") as f:
+            dec_places = load(f)["DEC_PLACES"]
 
         soln = frees(self.parent.fetch_eqns())
         soln.solve()
-        
+
         duration = f"Solved in {round(soln.soln.duration, 5)} seconds."
-        values = '\n'.join([f"{item} = {soln.soln.soln[item]}" for item in soln.soln.soln])
+        values = '\n'.join([f"{item} = {round(soln.soln.soln[item], dec_places)}" for item in soln.soln.soln])
         warnings = '\n'.join(soln.warnings)
         
         # TODO: add the unsolved lines warning once it is fixed in frees_lib2.py
@@ -178,7 +191,6 @@ class plot_window:
         dmn_start = StringVar()
         dmn_end =   StringVar()
         dmn_size =  StringVar()
-        dmn_size    .set("100") # TODO: get this to work. does not default to 100.
         ind_var =   StringVar()
         dep_var =   StringVar()
         ptitle =    StringVar()
@@ -220,13 +232,21 @@ class plot_window:
 
     def plot(self):
         """Plots a given dependent variable as a function of a given dependent variable"""
+        
+        dmn_size = self.dmn_size.get()
+
+        if dmn_size == "":
+            dmn_size = 25
+        else: 
+            dmn_size = int(dmn_size)
+
         domain = f_range(
             float(self.dmn_start.get()), 
             float(self.dmn_end.get()), 
-            int(self.dmn_size.get())
+            dmn_size
             )
         y = []
-        pb = prog_bar(int(self.dmn_size.get()), style="basic")
+        pb = prog_bar(dmn_size, style="basic")
 
         self.plot_button.configure(text=pb.show())
         for x in domain:

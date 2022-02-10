@@ -360,6 +360,7 @@
 "&C": ["Speed of light in a vacuum", "2.9979250e8", "m/s", "9.835712E+08", "ft/s"], 
 "&Green": ["the color green", "65280", "65280"], 
 "&pi": ["pi", "3.14159265359", "-", "3.14159265359", "-"], 
-"&mu_o": ["Permeability of free space", "1.25663705e-6", "N/amp^2", "2.825032E-07", "lbf/amp^2"]
+"&mu_o": ["Permeability of free space", "1.25663705e-6", "N/amp^2", "2.825032E-07", "lbf/amp^2"],
+"^": ["traditional exponent operator","**"]
 }
 }
