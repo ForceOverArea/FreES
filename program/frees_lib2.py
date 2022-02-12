@@ -10,7 +10,7 @@
 from re import findall, IGNORECASE
 from time import time
 from json import load
-from math import sin, cos, tan, sinh, cosh, tanh, asin, acos, atan, log10, log, exp
+from math import sin, cos, tan, sinh, cosh, tanh, asin, acos, atan, log10, log, exp, pi
 
 
 class soln:
@@ -39,6 +39,18 @@ def convert(from_unit:str, to_unit:str):
     return unit_set[from_unit]/unit_set[to_unit]
 
 
+def I_tube(OD, ID):
+    """Area moment of inertia for a round tube."""
+    return pi*(OD**4 - ID**4)/64
+    
+def I_rect(b, h):
+    """Area moment of inertia for rectangular stock"""
+    return (b*h**3)/3
+
+def I_u_channel(b, h, thk):
+    """Area moment of inertia for u-channel."""
+    return ((b-2*t)*t**3)/3 + 2*(t*h**3)/3
+
 def default_function_toolkit():
     """Returns the default functions to be recognized by FreES."""
 
@@ -55,7 +67,10 @@ def default_function_toolkit():
         "log":log10,
         "ln":log,
         "exp":exp,
-        "convert":convert
+        "convert":convert,
+        "iTube":I_tube,
+        "iRect":I_rect,
+        "iUChan":I_u_channel
     }
 
 
@@ -205,7 +220,7 @@ class frees:
         for const in default_constant_toolkit():
             self.exprs = self.exprs.replace(const, default_constant_toolkit()[const][1])
         
-        print(f"SYSTEM:\n{self.exprs}")
+        print(f"\n\n------------------------------------\n\nSYSTEM:\n{self.exprs}")
         self.lines = self.exprs.strip().split("\n")
         self.precision = precision
         self.iter_solve = iter_solve
@@ -226,7 +241,7 @@ class frees:
                 line_soln = solve_line(line, uar(self.soln.soln, self.toolkit), target_dx=self.precision)
 
                 if type(line_soln) == str:
-                    print(f"WARNING: {line_soln}")
+                    print(f"\n\n------------------------------------\n\nWARNING: {line_soln}")
                     self.warnings.append(line_soln)
 
                 elif line_soln != None:
