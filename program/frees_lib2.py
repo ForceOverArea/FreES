@@ -138,69 +138,101 @@ def iter_solve2(func:str, condition:float, var="x", vals={}, left_search_bound=1
         return soln({var: x}, time()-start, percent_err=100*abs(f(x)-condition)/condition)
 
 
+class eqn_parser:
+
+    def __init__(self, equation:str, knowns:dict):
+        self.knowns = knowns
+        self.equation = equation
+        self.vars = self.vf(self.equation)
+        self.exprs = self.equation.split("=")
+        self.not_an_equation = len(self.exprs) != 2
+        self.is_comment = self.equation.startswith("#")
+
+        if len(self.exprs) == 2:
+
+            self.flags = self.equation.split("!")
+
+            self.lhs_vars = self.vf(self.exprs[0])
+            self.rhs_vars = self.vf(self.exprs[1])
+
+            lhs = self.vf(self.exprs[0])
+            rhs = self.vf(self.exprs[1])
+                
+            self.too_many_unknowns = len(lhs) > 1 or len(rhs) > 1 or (len(lhs) == 1 and len(rhs) == 1)
+        
+        else: 
+        
+            self.flags = []
+    
+            self.lhs_vars = []
+            self.rhs_vars = []
+
+            self.too_many_unknowns = None
+
+        self.unsolvable = self.is_comment or self.too_many_unknowns or self.not_an_equation
+
+
+    def vf(self, expr:str):
+        """'Variable finder'. Returns a list of variables in an expression"""
+        found_vars = []
+
+        strings = findall(r"'([^']*)'", expr)
+        candidates = findall("[a-z]+", expr, IGNORECASE)
+
+        for i in strings:
+            if i in candidates: # This excludes all string occurences from the list of variables
+                candidates.remove(i)
+
+        for i in candidates:
+            if i not in self.knowns and i not in found_vars:
+                found_vars.append(i)
+
+        return found_vars
+        
+
 def solve_line(line:str, vals={}, target_dx=1E-20):
     """Parse an equation as a string and solve for a single unknown variable after subbing in known values."""
 
-    def vf(expr:str):
-        """'Variable finder'. Returns a list of variables in an expression"""
-        found_vars = []
-        strings = findall(r"'([^']*)'", expr)
+    line_info = eqn_parser(line, vals)
 
-        for var in findall("[a-z]+", expr, IGNORECASE):
-            
-            # candidate has been solved, candidate is not a string, do not repeat variables
-            if var not in vals and var not in strings and var not in found_vars:
-                found_vars.append(var)
-                
-        return found_vars
-    
-    if line.lstrip().startswith("#"):
+    if line_info.too_many_unknowns:
+        return f"Skipped unsolvable line due to too many unknowns: \n   {line}" # line is unsolvable due to too many unknowns.
+
+    if line_info.unsolvable:
         return None
 
-    exprs = line.split("=")
-    
-    if len(exprs) < 2:
-        return None # line is not an equation, stop solving.
-        
-    lhs = vf(exprs[0])
-    rhs = vf(exprs[1].split("!")[0].split("#")[0])
-    
-    if len(lhs) > 1 or len(rhs) > 1 or (len(lhs) == 1 and len(rhs) == 1):
-        return f"Skipped unsolvable line due to too many unknowns: \n   {line}" # line is unsolvable due to too many unknowns.
-    
-
-    elif len(lhs) == 1 and len(rhs) == 0:
+    elif len(line_info.lhs_vars) == 1 and len(line_info.rhs_vars) == 0:
     
         if "!bounds" in line:
             bounds = line.split("!bounds")[1].strip().split()
-            print(f"Solving {line} for {lhs[0]} with bounds {bounds}")
+            print(f"Solving {line} for {line_info.lhs_vars[0]} with bounds {bounds}")
 
         else:
             bounds = [-1E20, 1E20]
 
         return iter_solve(
-            func = exprs[0],
-            condition = eval(exprs[1].split("!")[0], vals),
-            var = lhs[0],
+            func = line_info.exprs[0],
+            condition = eval(line_info.exprs[1].split("!")[0], vals),
+            var = line_info.lhs_vars[0],
             vals = vals,
             left_search_bound = float(bounds[0]),
             right_search_bound = float(bounds[1]),
             target_dx = target_dx
         )
 
-    elif len(rhs) == 1 and len(lhs) == 0:
+    elif len(line_info.rhs_vars) == 1 and len(line_info.lhs_vars) == 0:
 
         if "!bounds" in line:
             bounds = line.split("!bounds")[1].strip().split()
-            print(f"Solving {line} for {rhs[0]} with bounds {bounds}")
+            print(f"Solving {line} for {line_info.rhs_vars[0]} with bounds {bounds}")
 
         else:
             bounds = [-1E20, 1E20]
 
         return iter_solve(
-            func = exprs[1].split("!")[0],
-            condition = eval(exprs[0], vals),
-            var = rhs[0],
+            func = line_info.exprs[1].split("!")[0],
+            condition = eval(line_info.exprs[0], vals),
+            var = line_info.rhs_vars[0],
             vals = vals,
             left_search_bound = float(bounds[0]),
             right_search_bound = float(bounds[1]),
@@ -209,6 +241,79 @@ def solve_line(line:str, vals={}, target_dx=1E-20):
 
     else:
         return None
+
+
+##def solve_line(line:str, vals={}, target_dx=1E-20):
+##    """Parse an equation as a string and solve for a single unknown variable after subbing in known values."""
+##
+##    def vf(expr:str):
+##        """'Variable finder'. Returns a list of variables in an expression"""
+##        found_vars = []
+##        strings = findall(r"'([^']*)'", expr)
+##
+##        for var in findall("[a-z]+", expr, IGNORECASE):
+##            
+##            # candidate has been solved, candidate is not a string, do not repeat variables
+##            if var not in vals and var not in strings and var not in found_vars:
+##                found_vars.append(var)
+##                
+##        return found_vars
+##    
+##    if line.lstrip().startswith("#"):
+##        return None
+##
+##    exprs = line.split("=")
+##    
+##    if len(exprs) < 2:
+##        return None # line is not an equation, stop solving.
+##        
+##    lhs = vf(exprs[0])
+##    rhs = vf(exprs[1].split("!")[0].split("#")[0])
+##    
+##    if len(lhs) > 1 or len(rhs) > 1 or (len(lhs) == 1 and len(rhs) == 1):
+##        return f"Skipped unsolvable line due to too many unknowns: \n   {line}" # line is unsolvable due to too many unknowns.
+##    
+##
+##    elif len(lhs) == 1 and len(rhs) == 0:
+##    
+##        if "!bounds" in line:
+##            bounds = line.split("!bounds")[1].strip().split()
+##            print(f"Solving {line} for {lhs[0]} with bounds {bounds}")
+##
+##        else:
+##            bounds = [-1E20, 1E20]
+##
+##        return iter_solve(
+##            func = exprs[0],
+##            condition = eval(exprs[1].split("!")[0], vals),
+##            var = lhs[0],
+##            vals = vals,
+##            left_search_bound = float(bounds[0]),
+##            right_search_bound = float(bounds[1]),
+##            target_dx = target_dx
+##        )
+##
+##    elif len(rhs) == 1 and len(lhs) == 0:
+##
+##        if "!bounds" in line:
+##            bounds = line.split("!bounds")[1].strip().split()
+##            print(f"Solving {line} for {rhs[0]} with bounds {bounds}")
+##
+##        else:
+##            bounds = [-1E20, 1E20]
+##
+##        return iter_solve(
+##            func = exprs[1].split("!")[0],
+##            condition = eval(exprs[0], vals),
+##            var = rhs[0],
+##            vals = vals,
+##            left_search_bound = float(bounds[0]),
+##            right_search_bound = float(bounds[1]),
+##            target_dx = target_dx
+##        )
+##
+##    else:
+##        return None
 
 
 class frees:
