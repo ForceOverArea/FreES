@@ -110,10 +110,6 @@
 "km/h": 0.2777778}, 
 
 "AREA":{
-"sqm":1.0,
-"sqcm":0.0001,
-"sqft":0.09290304,
-"sqin":0.00064516,
 "acre": 4046.856, 
 "hectare": 10000.0, 
 "barn": 1e-28}, 
@@ -364,7 +360,7 @@
 "&C": ["Speed of light in a vacuum", "2.9979250e8", "m/s", "9.835712E+08", "ft/s"], 
 "&Green": ["the color green", "65280", "65280"], 
 "&pi": ["pi", "3.14159265359", "-", "3.14159265359", "-"], 
-"&muo": ["Permeability of free space", "0.00000125663705", "N/amp^2", "2.825032E-07", "lbf/amp^2"],
+"&mu_o": ["Permeability of free space", "1.25663705e-6", "N/amp^2", "2.825032E-07", "lbf/amp^2"],
 "^": ["traditional exponent operator","**"]
 }
 }

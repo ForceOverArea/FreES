@@ -4,7 +4,8 @@ from platform import platform
 from time import sleep
 import warnings
 from frees_lib2 import frees, f_range
-from json import load
+from itertools import islice
+from json import load, dump
 from matplotlib import pyplot as plt
 from os import system as sh
 from tkinter import * 
@@ -24,26 +25,26 @@ class frees_app:
         Grid.rowconfigure(self.window, 1, weight=1)
         Grid.columnconfigure(self.window, 0, weight=1)
 
-        numcols = 6 # Hard-coded here to parametrize later code.
+        numcols = 7 # Hard-coded here to parametrize later code.
 
         self.exprs_box = ScrolledText(self.window)
         self.exprs_box.grid(columnspan=numcols, column=0, row=1, padx=10, pady=10, sticky="nsew")
         self.exprs_box.configure(state='normal')
         
-        self.solve_button = Button(self.window, text = "Save/Solve",     command = self.open_solution_window)     # Solve Button 
-        self.fs_button =    Button(self.window, text = "Open",           command = self.open_file_select)        # File Selection
-        self.save_button =  Button(self.window, text = "Save",           command = self.save_file)               # Save Button
-        self.saveas_button =Button(self.window, text = "Save As...",     command = self.open_saveas_window)
-        self.plot_button =  Button(self.window, text = "New Plot",       command = self.open_plot_window)   # Plot Button
-        self.unit_button =  Button(self.window, text = "Edit Unit Info", command = self.edit_unit_config)         # Edit Units Button
-        self.label =        Label( self.window, text = "No File Selected")                                  # Label showing current file
+        self.solve_button =     Button(self.window, text = "Save/Solve",     command = self.open_solution_window)   # Solve Button 
+        self.fs_button =        Button(self.window, text = "Open",           command = self.open_file_select)       # File Selection
+        self.save_button =      Button(self.window, text = "Save",           command = self.save_file)              # Save Button
+        self.saveas_button =    Button(self.window, text = "Save As...",     command = self.open_saveas_window)     # Save file as
+        self.plot_button =      Button(self.window, text = "New Plot",       command = self.open_plot_window)       # Plot Button
+        self.settings_button =  Button(self.window, text = "Settings",       command = self.open_settings_window)   # Change settings
+        self.label =            Label( self.window, text = "No File Selected")                                      # Label showing current file
 
         self.solve_button   .grid(column = 0, row = 0, sticky="ew")
         self.fs_button      .grid(column = 1, row = 0)
         self.save_button    .grid(column = 2, row = 0)
         self.saveas_button  .grid(column = 3, row = 0)
         self.plot_button    .grid(column = 4, row = 0)
-        self.unit_button    .grid(column = 5, row = 0)
+        self.settings_button.grid(column = 6, row = 0)
         self.label          .grid(columnspan = numcols, row = 2)
 
 
@@ -103,6 +104,12 @@ class frees_app:
         saw.window.mainloop()
 
 
+    def open_settings_window(self):
+        """Open the settings window to cleanly edit settings.json"""
+        sew = settings_window(self)
+        sew.window.mainloop()
+
+
     def start(self):
         self.exprs_box.focus()
         self.window.mainloop()
@@ -140,6 +147,69 @@ class save_as_window:
         self.window.destroy()
 
 
+class settings_window:
+    """Window for editing settings.json with a cleaner UI."""
+
+    def __init__(self, parent):
+
+        with open("./settings.json", "r") as f:            
+            self.settings = load(f)
+        
+        self.window = Toplevel()
+        self.parent = parent
+        self.window.title("FreES - Settings")
+        self.window.minsize(250,200)
+
+
+        self.truncate_label =       Label(self.window, text = "Decimal Places:")
+        self.truncate_slider =      Scale(self.window, from_ = 0, to = 10, tickinterval = 2, orient = "horizontal")
+        self.slncols_label =        Label(self.window, text = "Sln. Window Columns:")
+        self.slncols_slider =       Scale(self.window, from_ = 1, to = 5, tickinterval = 1, orient = "horizontal")
+        self.text_editor_label =    Label(self.window, text = "Change text editor:")
+        self.text_editor_box =      Button(self.window, text = "Browse", command = self.change_text_editor)
+        self.unit_label =           Label(self.window, text = "Edit Units file:")
+        self.unit_button =          Button(self.window, text = "Edit", command = self.edit_unit_config)
+        self.close_button =         Button(self.window, text = "Apply Changes and Close", command = self.apply_changes)
+
+
+        self.truncate_label         .grid(column = 0, row = 0, pady = 10, padx = 20)
+        self.truncate_slider        .grid(column = 1, row = 0, pady = 10, padx = 20, sticky = "w")
+        self.slncols_label          .grid(column = 0, row = 1, pady = 10, padx = 20)
+        self.slncols_slider         .grid(column = 1, row = 1, pady = 10, padx = 20, sticky = "w")
+        self.text_editor_label      .grid(column = 0, row = 2, pady = 10, padx = 20)
+        self.text_editor_box        .grid(column = 1, row = 2, pady = 10, padx = 20, sticky = "w")
+        self.unit_label             .grid(column = 0, row = 3, pady = 10, padx = 20)
+        self.unit_button            .grid(column = 1, row = 3, pady = 10, padx = 20, sticky = "w")
+        self.close_button           .grid(columnspan = 2, row = 4, pady = 10, padx = 10, sticky = "ew")
+
+
+    def change_text_editor(self):
+        """Choose a default text editor for editing units.txt"""
+        fp = askopenfilename(initialdir = "/", filetypes=(("Executables", "*.exe*"), ("All files", "*.*")))
+        print(fp)
+        if fp != "":
+            self.settings["TEXT_EDITOR"] = fp
+
+
+    def edit_unit_config(self):
+        """Edit the units.json file."""
+        with open("settings.json", "r") as f:
+            text_editor = load(f)["TEXT_EDITOR"]
+        sh(f"{text_editor} ./units.json")
+
+        
+    def apply_changes(self):
+        self.settings["DEC_PLACES"] = int(self.truncate_slider.get())
+        self.settings["SOLN_COLS"] = int(self.slncols_slider.get())
+
+        print(self.settings)
+
+        with open("./settings.json","w") as f:
+            dump(self.settings, f, indent = 4)
+
+        self.window.destroy()
+
+
 class solution_window:
     """Window for displaying solution."""
 
@@ -151,17 +221,31 @@ class solution_window:
         self.window.resizable(0, 0)
 
         with open("settings.json","r") as f:
-            dec_places = load(f)["DEC_PLACES"]
+            settings = load(f)
+            dec_places = settings["DEC_PLACES"]
+            soln_cols = settings["SOLN_COLS"]
 
         soln = frees(self.parent.fetch_eqns())
         soln.solve()
 
+
         duration = f"Solved in {round(soln.soln.duration, 5)} seconds."
-        values = '\n'.join([f"{item} = {round(soln.soln.soln[item], dec_places)}" for item in soln.soln.soln])
-        warnings = '\n'.join(soln.warnings)
+        values = [f"{item} = {round(soln.soln.soln[item], dec_places)}" for item in soln.soln.soln]
+        if len(soln.warnings) > 0:
+            warnings = "=========\n" + '\n'.join(soln.warnings)
+        else:
+            warnings = ""
+
+            
+        def sublists(items:list, n:int):
+      
+            # looping till length l
+            for i in range(0, len(items), n): 
+                yield items[i:i + n]
+
+        gridified = "\n\n".join(["\t  ".join(i) for i in list(sublists(values, soln_cols))])
         
-        # TODO: add the unsolved lines warning once it is fixed in frees_lib2.py
-        soln_text = f"{duration}\n\n{values}\n\n{warnings}" #\n\nUnsolved: {unsolved}"
+        soln_text = f"{duration}\n=========\n\n{gridified}\n\n{warnings}"
 
         self.titlebar = Label(self.window, text = "Solution:\n=========")
         self.swtext = Label(self.window, text = soln_text)

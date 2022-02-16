@@ -10,7 +10,7 @@
 from re import findall, IGNORECASE
 from time import time
 from json import load
-from math import sin, cos, tan, sinh, cosh, tanh, asin, acos, atan, log10, log, exp
+from math import sin, cos, tan, sinh, cosh, tanh, asin, acos, atan, log10, log, exp, pi
 
 
 class soln:
@@ -36,12 +36,20 @@ def convert(from_unit:str, to_unit:str):
         if from_unit in factors[cat] and to_unit in factors[cat]:
             unit_set = factors[cat]
 
-    try:
-        return unit_set[from_unit]/unit_set[to_unit]
-    
-    except UnboundLocalError:
-        raise "UnitConversionError: ensure units are of same type"
+    return unit_set[from_unit]/unit_set[to_unit]
 
+
+def I_tube(OD, ID):
+    """Area moment of inertia for a round tube."""
+    return pi*(OD**4 - ID**4)/64
+    
+def I_rect(b, h):
+    """Area moment of inertia for rectangular stock"""
+    return (b*h**3)/3
+
+def I_u_channel(b, h, thk):
+    """Area moment of inertia for u-channel."""
+    return ((b-2*t)*t**3)/3 + 2*(t*h**3)/3
 
 def default_function_toolkit():
     """Returns the default functions to be recognized by FreES."""
@@ -59,7 +67,10 @@ def default_function_toolkit():
         "log":log10,
         "ln":log,
         "exp":exp,
-        "convert":convert
+        "convert":convert,
+        "iTube":I_tube,
+        "iRect":I_rect,
+        "iUChan":I_u_channel
     }
 
 
@@ -232,77 +243,77 @@ def solve_line(line:str, vals={}, target_dx=1E-20):
         return None
 
 
-# def solve_line1(line:str, vals={}, target_dx=1E-20):
-#     """Parse an equation as a string and solve for a single unknown variable after subbing in known values."""
-
-#     def vf(expr:str):
-#         """'Variable finder'. Returns a list of variables in an expression"""
-#         found_vars = []
-#         strings = findall(r"'([^']*)'", expr)
-
-#         for var in findall("[a-z]+", expr, IGNORECASE):
-            
-#             # candidate has been solved, candidate is not a string, do not repeat variables
-#             if var not in vals and var not in strings and var not in found_vars:
-#                 found_vars.append(var)
-                
-#         return found_vars
-    
-#     if line.lstrip().startswith("#"):
-#         return None
-
-#     exprs = line.split("=")
-    
-#     if len(exprs) < 2:
-#         return None # line is not an equation, stop solving.
-        
-#     lhs = vf(exprs[0])
-#     rhs = vf(exprs[1].split("!")[0].split("#")[0])
-    
-#     if len(lhs) > 1 or len(rhs) > 1 or (len(lhs) == 1 and len(rhs) == 1):
-#         return f"Skipped unsolvable line due to too many unknowns: \n   {line}" # line is unsolvable due to too many unknowns.
-    
-
-#     elif len(lhs) == 1 and len(rhs) == 0:
-    
-#         if "!bounds" in line:
-#             bounds = line.split("!bounds")[1].strip().split()
-#             print(f"Solving {line} for {lhs[0]} with bounds {bounds}")
-
-#         else:
-#             bounds = [-1E20, 1E20]
-
-#         return iter_solve(
-#             func = exprs[0],
-#             condition = eval(exprs[1].split("!")[0], vals),
-#             var = lhs[0],
-#             vals = vals,
-#             left_search_bound = float(bounds[0]),
-#             right_search_bound = float(bounds[1]),
-#             target_dx = target_dx
-#         )
-
-#     elif len(rhs) == 1 and len(lhs) == 0:
-
-#         if "!bounds" in line:
-#             bounds = line.split("!bounds")[1].strip().split()
-#             print(f"Solving {line} for {rhs[0]} with bounds {bounds}")
-
-#         else:
-#             bounds = [-1E20, 1E20]
-
-#         return iter_solve(
-#             func = exprs[1].split("!")[0],
-#             condition = eval(exprs[0], vals),
-#             var = rhs[0],
-#             vals = vals,
-#             left_search_bound = float(bounds[0]),
-#             right_search_bound = float(bounds[1]),
-#             target_dx = target_dx
-#         )
-
-#     else:
-#         return None
+##def solve_line(line:str, vals={}, target_dx=1E-20):
+##    """Parse an equation as a string and solve for a single unknown variable after subbing in known values."""
+##
+##    def vf(expr:str):
+##        """'Variable finder'. Returns a list of variables in an expression"""
+##        found_vars = []
+##        strings = findall(r"'([^']*)'", expr)
+##
+##        for var in findall("[a-z]+", expr, IGNORECASE):
+##            
+##            # candidate has been solved, candidate is not a string, do not repeat variables
+##            if var not in vals and var not in strings and var not in found_vars:
+##                found_vars.append(var)
+##                
+##        return found_vars
+##    
+##    if line.lstrip().startswith("#"):
+##        return None
+##
+##    exprs = line.split("=")
+##    
+##    if len(exprs) < 2:
+##        return None # line is not an equation, stop solving.
+##        
+##    lhs = vf(exprs[0])
+##    rhs = vf(exprs[1].split("!")[0].split("#")[0])
+##    
+##    if len(lhs) > 1 or len(rhs) > 1 or (len(lhs) == 1 and len(rhs) == 1):
+##        return f"Skipped unsolvable line due to too many unknowns: \n   {line}" # line is unsolvable due to too many unknowns.
+##    
+##
+##    elif len(lhs) == 1 and len(rhs) == 0:
+##    
+##        if "!bounds" in line:
+##            bounds = line.split("!bounds")[1].strip().split()
+##            print(f"Solving {line} for {lhs[0]} with bounds {bounds}")
+##
+##        else:
+##            bounds = [-1E20, 1E20]
+##
+##        return iter_solve(
+##            func = exprs[0],
+##            condition = eval(exprs[1].split("!")[0], vals),
+##            var = lhs[0],
+##            vals = vals,
+##            left_search_bound = float(bounds[0]),
+##            right_search_bound = float(bounds[1]),
+##            target_dx = target_dx
+##        )
+##
+##    elif len(rhs) == 1 and len(lhs) == 0:
+##
+##        if "!bounds" in line:
+##            bounds = line.split("!bounds")[1].strip().split()
+##            print(f"Solving {line} for {rhs[0]} with bounds {bounds}")
+##
+##        else:
+##            bounds = [-1E20, 1E20]
+##
+##        return iter_solve(
+##            func = exprs[1].split("!")[0],
+##            condition = eval(exprs[0], vals),
+##            var = rhs[0],
+##            vals = vals,
+##            left_search_bound = float(bounds[0]),
+##            right_search_bound = float(bounds[1]),
+##            target_dx = target_dx
+##        )
+##
+##    else:
+##        return None
 
 
 class frees:
@@ -314,7 +325,7 @@ class frees:
         for const in default_constant_toolkit():
             self.exprs = self.exprs.replace(const, default_constant_toolkit()[const][1])
         
-        print(f"SYSTEM:\n{self.exprs}")
+        print(f"\n\n------------------------------------\n\nSYSTEM:\n{self.exprs}")
         self.lines = self.exprs.strip().split("\n")
         self.precision = precision
         self.iter_solve = iter_solve
@@ -335,7 +346,7 @@ class frees:
                 line_soln = solve_line(line, uar(self.soln.soln, self.toolkit), target_dx=self.precision)
 
                 if type(line_soln) == str:
-                    print(f"WARNING: {line_soln}")
+                    print(f"\n\n------------------------------------\n\nWARNING: {line_soln}")
                     self.warnings.append(line_soln)
 
                 elif line_soln != None:
