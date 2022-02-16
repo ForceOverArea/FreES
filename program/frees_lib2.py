@@ -153,12 +153,9 @@ class eqn_parser:
             self.flags = self.equation.split("!")
 
             self.lhs_vars = self.vf(self.exprs[0])
-            self.rhs_vars = self.vf(self.exprs[1])
-
-            lhs = self.vf(self.exprs[0])
-            rhs = self.vf(self.exprs[1])
+            self.rhs_vars = self.vf(self.exprs[1].split("!")[0].split("#")[0])
                 
-            self.too_many_unknowns = len(lhs) > 1 or len(rhs) > 1 or (len(lhs) == 1 and len(rhs) == 1)
+            self.too_many_unknowns = len(self.lhs_vars) > 1 or len(self.rhs_vars) > 1 or (len(self.lhs_vars) == 1 and len(self.rhs_vars) == 1)
         
         else: 
         

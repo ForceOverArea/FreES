@@ -1,10 +1,7 @@
 # FreES GUI toolkit library. Version 2
 
-from platform import platform
 from time import sleep
-import warnings
 from frees_lib2 import frees, f_range
-from itertools import islice
 from json import load, dump
 from matplotlib import pyplot as plt
 from os import system as sh
@@ -169,7 +166,7 @@ class settings_window:
         self.text_editor_box =      Button(self.window, text = "Browse", command = self.change_text_editor)
         self.unit_label =           Label(self.window, text = "Edit Units file:")
         self.unit_button =          Button(self.window, text = "Edit", command = self.edit_unit_config)
-        self.close_button =         Button(self.window, text = "Apply Changes and Close", command = self.apply_changes)
+        self.apply_button =         Button(self.window, text = "Apply Changes", command = self.apply_changes)
 
 
         self.truncate_label         .grid(column = 0, row = 0, pady = 10, padx = 20)
@@ -180,7 +177,7 @@ class settings_window:
         self.text_editor_box        .grid(column = 1, row = 2, pady = 10, padx = 20, sticky = "w")
         self.unit_label             .grid(column = 0, row = 3, pady = 10, padx = 20)
         self.unit_button            .grid(column = 1, row = 3, pady = 10, padx = 20, sticky = "w")
-        self.close_button           .grid(columnspan = 2, row = 4, pady = 10, padx = 10, sticky = "ew")
+        self.apply_button           .grid(columnspan = 2, row = 4, pady = 10, padx = 10, sticky = "ew")
 
 
     def change_text_editor(self):
@@ -207,7 +204,10 @@ class settings_window:
         with open("./settings.json","w") as f:
             dump(self.settings, f, indent = 4)
 
-        self.window.destroy()
+        self.apply_button.configure(text = "Changes Applied!")
+        self.apply_button.update_idletasks()
+        sleep(2)
+        self.apply_button.configure(text = "Apply Changes")
 
 
 class solution_window:
@@ -238,7 +238,6 @@ class solution_window:
 
             
         def sublists(items:list, n:int):
-      
             # looping till length l
             for i in range(0, len(items), n): 
                 yield items[i:i + n]
@@ -385,4 +384,4 @@ class prog_bar:
         return state
         
 
-frees_app("~\\Documents").start()
+frees_app("../tmp").start()
