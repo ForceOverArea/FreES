@@ -206,7 +206,7 @@ class settings_window:
 
         self.apply_button.configure(text = "Changes Applied!")
         self.apply_button.update_idletasks()
-        sleep(2)
+        sleep(0.5)
         self.apply_button.configure(text = "Apply Changes")
 
 

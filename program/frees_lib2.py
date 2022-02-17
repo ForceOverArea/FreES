@@ -99,7 +99,7 @@ def iter_solve(func:str, condition:float, var="x", vals={}, left_search_bound=1E
     
     while abs(dx) > target_dx:
 
-        while e(x + dx) < e(x):
+        while e(x + dx) < e(x) and left_search_bound < x + dx < right_search_bound: # Do not ignore search bounds
             x += dx
 
         x += dx # go to the next point
@@ -150,13 +150,32 @@ class eqn_parser:
 
         if len(self.exprs) == 2:
 
-            self.flags = self.equation.split("!")
-
             self.lhs_vars = self.vf(self.exprs[0])
             self.rhs_vars = self.vf(self.exprs[1].split("!")[0].split("#")[0])
                 
             self.too_many_unknowns = len(self.lhs_vars) > 1 or len(self.rhs_vars) > 1 or (len(self.lhs_vars) == 1 and len(self.rhs_vars) == 1)
-        
+
+            self.flags = self.equation.split("!")
+            if len(self.flags) > 0:
+                for flag in self.flags:
+                    
+                    if "bound" in flag:
+                        args = flag.split()[1:] # all arguments before next flag
+
+                        self.bound_var = args[0]
+                        self.l_bound = min(args[1:])
+                        self.r_bound = max(args[1:])
+
+                    else:
+                        self.bound_var = None
+                        self.l_bound = None
+                        self.r_bound = None
+                        
+            else:
+                self.bound_var = None
+                self.l_bound = None
+                self.r_bound = None
+                
         else: 
         
             self.flags = []
@@ -200,10 +219,9 @@ def solve_line(line:str, vals={}, target_dx=1E-20):
 
     elif len(line_info.lhs_vars) == 1 and len(line_info.rhs_vars) == 0:
     
-        if "!bounds" in line:
-            bounds = line.split("!bounds")[1].strip().split()
-            print(f"Solving {line} for {line_info.lhs_vars[0]} with bounds {bounds}")
-
+        if line_info.bound_var == line_info.lhs_vars[0]:
+            bounds = line_info.l_bound, line_info.r_bound
+            print(f"\n\n------------------------------------\n\nBOUND FLAG: {bounds}")
         else:
             bounds = [-1E20, 1E20]
 
@@ -219,10 +237,9 @@ def solve_line(line:str, vals={}, target_dx=1E-20):
 
     elif len(line_info.rhs_vars) == 1 and len(line_info.lhs_vars) == 0:
 
-        if "!bounds" in line:
-            bounds = line.split("!bounds")[1].strip().split()
-            print(f"Solving {line} for {line_info.rhs_vars[0]} with bounds {bounds}")
-
+        if line_info.bound_var == line_info.rhs_vars[0]:
+            bounds = line_info.l_bound, line_info.r_bound
+            print(f"\n\n------------------------------------\n\nBOUND FLAG: {bounds}")
         else:
             bounds = [-1E20, 1E20]
 
