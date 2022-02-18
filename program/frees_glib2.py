@@ -1,5 +1,6 @@
 # FreES GUI toolkit library. Version 2
 
+from logging import exception
 from time import sleep
 from frees_lib2 import frees, f_range
 from json import load, dump
@@ -226,25 +227,28 @@ class solution_window:
             soln_cols = settings["SOLN_COLS"]
 
         soln = frees(self.parent.fetch_eqns())
-        soln.solve()
+        try:
+            soln.solve()
 
+            duration = f"Solved in {round(soln.soln.duration, 5)} seconds."
+            values = [f"{item} = {round(soln.soln.soln[item], dec_places)}" for item in soln.soln.soln]
+            if len(soln.warnings) > 0:
+                warnings = "=========\n" + '\n'.join(soln.warnings)
+            else:
+                warnings = ""
 
-        duration = f"Solved in {round(soln.soln.duration, 5)} seconds."
-        values = [f"{item} = {round(soln.soln.soln[item], dec_places)}" for item in soln.soln.soln]
-        if len(soln.warnings) > 0:
-            warnings = "=========\n" + '\n'.join(soln.warnings)
-        else:
-            warnings = ""
+                
+            def sublists(items:list, n:int):
+                # looping till length l
+                for i in range(0, len(items), n): 
+                    yield items[i:i + n]
 
+            gridified = "\n\n".join(["\t  ".join(i) for i in list(sublists(values, soln_cols))])
             
-        def sublists(items:list, n:int):
-            # looping till length l
-            for i in range(0, len(items), n): 
-                yield items[i:i + n]
-
-        gridified = "\n\n".join(["\t  ".join(i) for i in list(sublists(values, soln_cols))])
+            soln_text = f"{duration}\n=========\n\n{gridified}\n\n{warnings}"
         
-        soln_text = f"{duration}\n=========\n\n{gridified}\n\n{warnings}"
+        except Exception as e:
+            soln_text = f"Could not solve due to the following Python error: \n\n{str(e)}" 
 
         self.titlebar = Label(self.window, text = "Solution:\n=========")
         self.swtext = Label(self.window, text = soln_text)
