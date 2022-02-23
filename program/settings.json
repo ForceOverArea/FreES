@@ -1,4 +1,5 @@
 {
     "DEC_PLACES":10,
+    "SOLN_COLS":3,
     "TEXT_EDITOR":"notepad"
 }
