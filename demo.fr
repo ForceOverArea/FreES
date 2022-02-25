@@ -5,12 +5,16 @@
 y = 90
 y = x^3 + x + 5
 
-# Also notice how 'r' and 'h' can be found in a similar 
+
+
+# Also notice how 'r' and 'h' can be found in a similar
 # way, even though 'c' is not declared until the next line:
 
 c = r^7 + r^5 + 6
 h = c + r
 x = c
+
+
 
 # FreES uses the python interpreter for calculations,
 # so both '^' notation and '**' notation work. '^' is 
@@ -19,21 +23,53 @@ x = c
 n = h^3
 ne = h**3
 
+
+
 # FreES has a built-in function for unit conversion.
 # use single quotes to denote the desired units as 
 # strings.
 
 inch = 2.54 * convert('cm','in')
 
-# FreES also has a library of common constants. Use an
-# ampersand to denote a constant
-pi = &pi
-g = &g
 
-deg = (2*&pi) * convert('rad','deg')
 
 # FreES will solve a system to the best of its ability,
 # but may be unable to solve some expressions. Notice the 
 # error that appears in the solution window on solving:
 
 unsolvable = line
+
+
+
+# FreES uses more syntax than normal math. This means
+# That while FreES is mostly meant to understand math symbols,
+# it also has a host of flags and special symbols for more 
+# advanced mathematical modelling.
+# For equations that have multiple solutions, use the 
+# '!bound' flag to specify the allowable range of solutions.
+# In the example below, this forces the condition '0 < t < 10'
+
+p = 4
+p = t^2 !bound t 0 10
+
+
+
+# for piecewise functions, use an '!if' flag
+# to specify which function to use on which domain:
+
+j = 8
+
+k = 7 !if j /= 8
+k = 5 !if j = 8
+
+# FreES will also produce a warning for any conditional statements 
+# that were not satisfied during the solving process
+
+
+
+# FreES also has a library of common constants. 
+# Use an ampersand to denote a constant
+pi = &pi
+g = &g
+
+deg = (2*&pi) * convert('rad','deg')
