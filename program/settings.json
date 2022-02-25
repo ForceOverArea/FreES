@@ -1,5 +1,6 @@
 {
-    "DEC_PLACES":10,
-    "SOLN_COLS":3,
-    "TEXT_EDITOR":"notepad"
+    "DEC_PLACES": 10,
+    "SOLN_COLS": 2,
+    "ACCURACY": "1E-320",
+    "TEXT_EDITOR": "notepad"
 }
