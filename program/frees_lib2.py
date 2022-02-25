@@ -44,13 +44,16 @@ def I_tube(OD, ID):
     """Area moment of inertia for a round tube."""
     return pi*(OD**4 - ID**4)/64
     
+
 def I_rect(b, h):
     """Area moment of inertia for rectangular stock"""
     return (b*h**3)/3
 
+
 def I_u_channel(b, h, thk):
     """Area moment of inertia for u-channel."""
     return ((b-2*thk)*thk**3)/3 + 2*(thk*h**3)/3
+
 
 def default_function_toolkit():
     """Returns the default functions to be recognized by FreES."""
@@ -87,7 +90,7 @@ def uar(myDict:dict, newDict:dict):
         return myDict
 
 
-def iter_solve(func:str, condition:float, var="x", vals={}, left_search_bound=1E20, right_search_bound=-1E20, target_dx=1E-20, steps=8):
+def iter_solve(func:str, condition:float, var="x", vals={}, left_search_bound=1E20, right_search_bound=-1E20, target_dx=1E-50, steps=8):
     """A more declarative approach to iterative solving. Approximately 4-5x slower than 'iter_solve', but much easier to understand."""
 
     start = time()
@@ -305,20 +308,21 @@ def solve_line(line:str, vals={}, target_dx=1E-20):
 class frees:
     """FreES engine for solving systems of equations."""
 
-    def __init__(self, exprs:str, precision=1E-20, toolkit={}):
+    def __init__(self, exprs:str, accuracy=1E-1000, toolkit={}):
         self.exprs = exprs
 
         for const in default_constant_toolkit():
             self.exprs = self.exprs.replace(const, default_constant_toolkit()[const][1])
-        
+
         print(f"\n\n------------------------------------\n\nSYSTEM:\n{self.exprs}")
         self.lines = self.exprs.strip().split("\n")
-        self.precision = precision
+        self.accuracy = accuracy
         self.iter_solve = iter_solve
         self.toolkit = uar(default_function_toolkit(), toolkit)
         self.soln = soln({}, 0, percent_err=0.0)
         self.warnings = []
 
+        print(f"\n\n------------------------------------\n\nACCURACY:\n%.2E" % self.accuracy)
 
     def solve(self):
         solution_in_progress = True
@@ -328,8 +332,8 @@ class frees:
             self.warnings = []
             
             for line in self.lines:
-                line_number = self.lines.index(line) + 1
-                line_soln = solve_line(line, uar(self.soln.soln, self.toolkit), target_dx=self.precision)
+                # line_number = self.lines.index(line) + 1
+                line_soln = solve_line(line, uar(self.soln.soln, self.toolkit), target_dx=self.accuracy)
 
                 if type(line_soln) == str:
                     print(f"\n\n------------------------------------\n\nWARNING: {line_soln}")

@@ -1,6 +1,5 @@
 # FreES GUI toolkit library. Version 2
 
-from logging import exception
 from time import sleep
 from frees_lib2 import frees, f_range
 from json import load, dump
@@ -9,7 +8,7 @@ from os import system as sh
 from tkinter import * 
 from tkinter.filedialog import askopenfilename
 from tkinter.scrolledtext import ScrolledText
-from tkinter.ttk import Button, Label, Entry
+# from tkinter.ttk import Button, Label, Entry
 
 
 class frees_app:
@@ -37,12 +36,12 @@ class frees_app:
         self.settings_button =  Button(self.window, text = "Settings",       command = self.open_settings_window)   # Change settings
         self.label =            Label( self.window, text = "No File Selected")                                      # Label showing current file
 
-        self.solve_button   .grid(column = 0, row = 0, sticky="ew")
-        self.fs_button      .grid(column = 1, row = 0)
-        self.save_button    .grid(column = 2, row = 0)
-        self.saveas_button  .grid(column = 3, row = 0)
-        self.plot_button    .grid(column = 4, row = 0)
-        self.settings_button.grid(column = 6, row = 0)
+        self.solve_button   .grid(column = 0, row = 0, sticky="ew", padx = 2, pady = 2)
+        self.fs_button      .grid(column = 1, row = 0, padx = 2, pady = 2)
+        self.save_button    .grid(column = 2, row = 0, padx = 2, pady = 2)
+        self.saveas_button  .grid(column = 3, row = 0, padx = 2, pady = 2)
+        self.plot_button    .grid(column = 4, row = 0, padx = 2, pady = 2)
+        self.settings_button.grid(column = 6, row = 0, padx = 2, pady = 2)
         self.label          .grid(columnspan = numcols, row = 2)
 
 
@@ -130,7 +129,7 @@ class save_as_window:
 
         self.filename_label .grid(row = 0, column = 0)
         self.name_box       .grid(row = 0, column = 1, pady = 10, sticky = "ew")
-        self.saveas_button  .grid(row = 1, columnspan = 2, sticky = "ew")
+        self.saveas_button  .grid(row = 1, columnspan = 2, padx = 10, pady = 10, sticky = "ew")
 
 
     def save_as(self):
@@ -150,6 +149,8 @@ class settings_window:
 
     def __init__(self, parent):
 
+        self.scale = 10 # parametrizes the scaling of the accuracy setting
+
         with open("./settings.json", "r") as f:            
             self.settings = load(f)
         
@@ -163,6 +164,8 @@ class settings_window:
         self.truncate_slider =      Scale(self.window, from_ = 0, to = 10, tickinterval = 2, orient = "horizontal")
         self.slncols_label =        Label(self.window, text = "Sln. Window Columns:")
         self.slncols_slider =       Scale(self.window, from_ = 1, to = 5, tickinterval = 1, orient = "horizontal")
+        self.accuracy_label =       Label(self.window, text = f"Solver Accuracy (Res. = 1E-{self.scale}X):")
+        self.accuracy_slider =      Scale(self.window, from_ = 1, to = 32, tickinterval = 31, orient = "horizontal")
         self.text_editor_label =    Label(self.window, text = "Change text editor:")
         self.text_editor_box =      Button(self.window, text = "Browse", command = self.change_text_editor)
         self.unit_label =           Label(self.window, text = "Edit Units file:")
@@ -174,11 +177,18 @@ class settings_window:
         self.truncate_slider        .grid(column = 1, row = 0, pady = 10, padx = 20, sticky = "w")
         self.slncols_label          .grid(column = 0, row = 1, pady = 10, padx = 20)
         self.slncols_slider         .grid(column = 1, row = 1, pady = 10, padx = 20, sticky = "w")
-        self.text_editor_label      .grid(column = 0, row = 2, pady = 10, padx = 20)
-        self.text_editor_box        .grid(column = 1, row = 2, pady = 10, padx = 20, sticky = "w")
-        self.unit_label             .grid(column = 0, row = 3, pady = 10, padx = 20)
-        self.unit_button            .grid(column = 1, row = 3, pady = 10, padx = 20, sticky = "w")
-        self.apply_button           .grid(columnspan = 2, row = 4, pady = 10, padx = 10, sticky = "ew")
+        self.accuracy_label         .grid(column = 0, row = 2, pady = 10, padx = 20)
+        self.accuracy_slider        .grid(column = 1, row = 2, pady = 10, padx = 20, sticky = "w")
+        self.text_editor_label      .grid(column = 0, row = 3, pady = 10, padx = 20)
+        self.text_editor_box        .grid(column = 1, row = 3, pady = 10, padx = 20, sticky = "w")
+        self.unit_label             .grid(column = 0, row = 4, pady = 10, padx = 20)
+        self.unit_button            .grid(column = 1, row = 4, pady = 10, padx = 20, sticky = "w")
+        self.apply_button           .grid(columnspan = 2, row = 5, pady = 10, padx = 10, sticky = "ew")
+
+
+        self.truncate_slider        .set(self.settings["DEC_PLACES"])
+        self.slncols_slider         .set(self.settings["SOLN_COLS"])
+        self.accuracy_slider        .set(int(self.settings["ACCURACY"][3:])/self.scale)
 
 
     def change_text_editor(self):
@@ -199,6 +209,7 @@ class settings_window:
     def apply_changes(self):
         self.settings["DEC_PLACES"] = int(self.truncate_slider.get())
         self.settings["SOLN_COLS"] = int(self.slncols_slider.get())
+        self.settings["ACCURACY"] = f"1E-{self.accuracy_slider.get()*self.scale}"
 
         print(self.settings)
 
@@ -225,8 +236,9 @@ class solution_window:
             settings = load(f)
             dec_places = settings["DEC_PLACES"]
             soln_cols = settings["SOLN_COLS"]
+            accuracy = float(settings["ACCURACY"])
 
-        soln = frees(self.parent.fetch_eqns())
+        soln = frees(self.parent.fetch_eqns(), accuracy)
         try:
             soln.solve()
 
@@ -243,7 +255,7 @@ class solution_window:
                 for i in range(0, len(items), n): 
                     yield items[i:i + n]
 
-            gridified = "\n\n".join(["\t  ".join(i) for i in list(sublists(values, soln_cols))])
+            gridified = "\n\n".join(["\t\t".join(i) for i in list(sublists(values, soln_cols))])
             
             soln_text = f"{duration}\n=========\n\n{gridified}\n\n{warnings}"
         
@@ -256,7 +268,7 @@ class solution_window:
 
         self.titlebar       .grid(column = 0, row = 0)
         self.swtext         .grid(column = 0, row = 1, padx = 10, pady = 10)
-        self.close_button   .grid(column = 0, row = 2)
+        self.close_button   .grid(column = 0, row = 2, pady = 10)
 
 
     def close(self):
