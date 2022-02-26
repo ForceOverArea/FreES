@@ -18,30 +18,58 @@ class frees_app:
         self.window = Tk() 
         self.window.title("FreES - The Free, Open Source, Engineering Equation Solver")
         self.window.minsize(600, 400)
+        self.window.iconbitmap("./frees.ico")
         self.current_file = fp
         Grid.rowconfigure(self.window, 1, weight=1)
         Grid.columnconfigure(self.window, 0, weight=1)
 
         numcols = 7 # Hard-coded here to parametrize later code.
 
-        self.exprs_box = ScrolledText(self.window)
-        self.exprs_box.grid(columnspan=numcols, column=0, row=1, padx=10, pady=10, sticky="nsew")
+        self.exprs_box = ScrolledText(self.window, background = 'gray10', foreground = 'orange', insertbackground = 'orange')
         self.exprs_box.configure(state='normal')
+
+        # Menu Bar
+        self.menubar = Menu(self.window)
         
-        self.solve_button =     Button(self.window, text = "Save/Solve",     command = self.open_solution_window)   # Solve Button 
-        self.fs_button =        Button(self.window, text = "Open",           command = self.open_file_select)       # File Selection
-        self.save_button =      Button(self.window, text = "Save",           command = self.save_file)              # Save Button
-        self.saveas_button =    Button(self.window, text = "Save As...",     command = self.open_saveas_window)     # Save file as
-        self.plot_button =      Button(self.window, text = "New Plot",       command = self.open_plot_window)       # Plot Button
-        self.settings_button =  Button(self.window, text = "Settings",       command = self.open_settings_window)   # Change settings
+        self.filemenu = Menu(self.menubar, tearoff = 0)
+        self.filemenu.add_command(label = "Open",       command = self.open_file_select)
+        self.filemenu.add_command(label = "Save",       command = self.save_file)
+        self.filemenu.add_command(label = "Save as...", command = self.open_saveas_window)
+
+        self.plotmenu = Menu(self.menubar, tearoff = 0)
+        self.plotmenu.add_command(label = "New 2-D Plot",           command = self.open_plot_window)
+        self.plotmenu.add_command(label = "New 3-D Plot",           command = self.open_3d_plot_window)
+        self.plotmenu.add_command(label = "Open Existing Plot(s)",  command = self.regen_plots)
+
+        self.solvemenu = Menu(self.menubar, tearoff = 0)
+        self.solvemenu.add_command(label = "Save & Solve",          command = self.open_solution_window)
+        self.solvemenu.add_command(label = "Solve for Table",       command = self.open_table_solution_window)
+
+        self.menubar.add_cascade(label = "File", menu = self.filemenu)
+        self.menubar.add_cascade(label = "Solve", menu = self.solvemenu)
+        self.menubar.add_cascade(label = "Plot", menu = self.plotmenu)
+        self.menubar.add_command(label = "Settings", command = self.open_settings_window)
+        self.window.config(menu = self.menubar)
+
+
+        # Main Controls
+        self.solve_button =     Button(self.window, text = "🧮 Save & Solve",     command = self.open_solution_window)   # Solve Button 
+        # self.fs_button =        Button(self.window, text = "Open",           command = self.open_file_select)       # File Selection
+        self.save_button =      Button(self.window, text = "💾 Save",           command = self.save_file)              # Save Button
+        # self.saveas_button =    Button(self.window, text = "Save As...",     command = self.open_saveas_window)     # Save file as
+        self.plot_button =      Button(self.window, text = "📈 New Plot",       command = self.open_plot_window)       # Plot Button
+        # self.settings_button =  Button(self.window, text = "Settings",       command = self.open_settings_window)   # Change settings
         self.label =            Label( self.window, text = "No File Selected")                                      # Label showing current file
 
-        self.solve_button   .grid(column = 0, row = 0, sticky="ew", padx = 2, pady = 2)
-        self.fs_button      .grid(column = 1, row = 0, padx = 2, pady = 2)
-        self.save_button    .grid(column = 2, row = 0, padx = 2, pady = 2)
-        self.saveas_button  .grid(column = 3, row = 0, padx = 2, pady = 2)
-        self.plot_button    .grid(column = 4, row = 0, padx = 2, pady = 2)
-        self.settings_button.grid(column = 6, row = 0, padx = 2, pady = 2)
+
+        # # Orientation of controls
+        self.exprs_box      .grid(columnspan=numcols, column=0, row=1, padx=10, pady=10, sticky="nsew")
+        self.solve_button   .grid(column = 0, row = 0, padx = 2, pady = 2, sticky = "ew")
+        # self.fs_button      .grid(column = 1, row = 0, padx = 2, pady = 2)
+        self.save_button    .grid(column = 1, row = 0, padx = 2, pady = 2)
+        # self.saveas_button  .grid(column = 3, row = 0, padx = 2, pady = 2)
+        self.plot_button    .grid(column = 2, row = 0, padx = 2, pady = 2)
+        # self.settings_button.grid(column = 6, row = 0, padx = 2, pady = 2)
         self.label          .grid(columnspan = numcols, row = 2)
 
 
@@ -63,10 +91,25 @@ class frees_app:
         sw.window.mainloop()
 
 
+    def open_table_solution_window(self):
+        """Show the solutions for a table of values."""
+        pass
+
     def open_plot_window(self):
         """Create a plot of an independent and dependent variable."""
         pw = plot_window(self)
         pw.window.mainloop()
+
+
+    def open_3d_plot_window(self):
+        """Create a plot of an independent and dependent variable."""
+        pw = plot_window(self)
+        pw.window.mainloop()
+
+
+    def regen_plots(self):
+        """Read plot info attached to file and display it via matplotlib"""
+        pass
 
 
     def open_file_select(self):
@@ -120,6 +163,7 @@ class save_as_window:
         self.parent = parent
         self.window.title("FreES - Save File As...")
         self.window.minsize(200,50)
+        self.window.iconbitmap("./frees.ico")
 
         self.new_filename = StringVar()
 
@@ -158,6 +202,7 @@ class settings_window:
         self.parent = parent
         self.window.title("FreES - Settings")
         self.window.minsize(250,200)
+        self.window.iconbitmap("./frees.ico")
 
 
         self.truncate_label =       Label(self.window, text = "Decimal Places:")
@@ -230,6 +275,7 @@ class solution_window:
         self.parent = parent
         self.window.title("FreES - Solution Window")
         self.window.minsize(200,200)
+        self.window.iconbitmap("./frees.ico")
         self.window.resizable(0, 0)
 
         with open("settings.json","r") as f:
@@ -283,6 +329,7 @@ class plot_window:
         self.parent = parent
         self.window.title("FreES - Create New Plot")
         self.window.resizable(0, 0)
+        self.window.iconbitmap("./frees.ico")
 
         plot_menu = Frame(self.window)
         plot_menu.grid(padx=10, pady=10)

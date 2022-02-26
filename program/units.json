@@ -1,370 +1,653 @@
 {
-"LENGTH":{
-"m": 1.0, 
-"meter": 1.0, 
-"metre": 1.0, 
-"Angstrom": 1e-10, 
-"nm": 1e-09, 
-"ft": 0.3048, 
-"dm": 0.1, 
-"in": 0.0254, 
-"inch": 0.0254, 
-"mm": 0.001, 
-"micron": 1e-06, 
-"micrometer": 1e-06, 
-"µm": 1e-06, 
-"nanometer": 1e-09, 
-"millimeter": 0.001, 
-"cm": 0.01, 
-"km": 1000.0, 
-"yd": 0.9144, 
-"yard": 0.9144, 
-"mi": 1609.344, 
-"mile": 1609.344, 
-"miles": 1609.344, 
-"fathom": 1.8288, 
-"mil": 2.54e-05, 
-"rod": 5.0292, 
-"furlong": 201.168, 
-"league": 5556.0, 
-"hectometer": 100.0}, 
-
-"MASS":{
-"kg": 1.0, 
-"lbm": 0.453592374, 
-"lb_m": 0.453592374, 
-"g": 0.001, 
-"ton": 907.184749, 
-"grain": 6.4799e-05, 
-"mg": 1e-06, "oz": 0.028349523, 
-"ozm": 0.028349523, 
-"slug": 14.593881, 
-"stone": 6.350293236, 
-"amu": 1.660531e-27, 
-"µg": 1e-09, 
-"microgram": 1e-09, 
-"mt": 1000.0, 
-"tonne": 1000.0}, 
-
-"MOLES":{
-"kgmole": 1.0, 
-"kgmol": 1.0, 
-"kmole": 1.0, 
-"kmol": 1.0, 
-"lbmole": 0.453592374, 
-"lbmol": 0.453592374, 
-"gmole": 0.001, 
-"gmol": 0.001, 
-"mole": 0.001, 
-"mol": 0.001}, 
-
-"TIME":{
-"s": 1.0, 
-"sec": 1.0, 
-"second": 1.0, 
-"min": 60.0, 
-"minute": 60.0, 
-"h": 3600.0, 
-"hr": 3600.0, 
-"hour": 3600.0, 
-"day": 86400.0, 
-"days": 86400.0, 
-"week": 604800.0, 
-"weeks": 604800.0, 
-"fortnight": 1209600.0, 
-"year": 31556952.0, 
-"yr": 31556952.0, 
-"years": 31556952.0, 
-"millisec": 0.001, 
-"µsec": 1e-06, 
-"microsec": 1e-06}, 
-
-"FREQUENCY":{
-"cps": 1.0, 
-"cpm": 0.016666667, 
-"Bq": 1.0, 
-"ci": 37000000000.0, 
-"Hz": 1.0}, 
-
-"TEMPERATURE":{
-"K": 1.0, 
-"C": 1.0, 
-"R": 0.55555556, 
-"F": 0.55555556, 
-"°C": 1.0, 
-"°F": 0.55555556}, 
-
-"TEMP. DIFFERENCE":{
-"DELTAK": 1.0, 
-"DELTAC": 1.0, 
-"DELTAF": 0.55555556, 
-"DELTAR": 0.55555556}, 
-
-"VELOCITY":{
-"mph": 0.44704, 
-"knot": 0.51444, 
-"m/s": 1.0, 
-"km/s": 0.001, 
-"ft/s": 0.3048, 
-"kph": 0.2777778, 
-"km/h": 0.2777778}, 
-
-"AREA":{
-"sqm":1.0,
-"sqcm":0.0001,
-"sqft":0.09290304,
-"sqin":0.00064516,
-"acre": 4046.856, 
-"hectare": 10000.0, 
-"barn": 1e-28}, 
-
-"VOLUME":{
-"gal": 0.0037854118, 
-"gallon": 0.0037854118, 
-"l": 0.001, 
-"Bu": 0.03523007016688, 
-"ml": 1e-06, 
-"milliliter": 1e-06, 
-"µl": 1e-09, 
-"microliter": 1e-09, 
-"liter": 0.001, 
-"quart": 0.0009463264, 
-"oz": 2.9572702e-05, 
-"ozv": 2.9572702e-05, 
-"pint": 0.000473163, 
-"bbl": 0.1589873}, 
-
-"VOLUMETRIC FLOW":{
-"cfm": 0.00047194744, 
-"gph": 1.051503e-06, 
-"gpm": 6.30902e-05}, 
-
-"FORCE":{
-"N": 1.0, 
-"kN": 1000.0, 
-"lbf": 4.448222, 
-"lb_f": 4.448222, 
-"dyne": 1e-05, 
-"kgf": 9.80665, 
-"kg_f": 9.80665}, 
-
-"PRESSURE":{
-"Pa": 1.0, 
-"milliPa": 0.001, 
-"microPa": 1e-06, 
-"µPa": 1e-06, 
-"kPa": 1000.0, 
-"MPa": 1000000.0, 
-"GPa": 1000000000.0, 
-"gigaPa": 1000000000.0, 
-"bar": 100000.0, 
-"milliBar": 100.0, 
-"atm": 101325.0, 
-"psia": 6894.75788958, 
-"psi": 6894.75788958, 
-"ksi": 6894757.88958, 
-"psig": 6894.75788958, 
-"psf": 47.88055555, 
-"mmH2O": 9.80665, 
-"mH2O": 9806.65, 
-"mmHg": 133.3224, 
-"inHg": 3386.388, 
-"torr": 133.3224, 
-"inH2O": 249.088, 
-"in.H2O": 249.088, 
-"ftH2O": 2989.057}, 
-
-"ENERGY":{
-"J": 1.0, 
-"milliJ": 0.001, 
-"kJ": 1000.0, 
-"MJ": 1000000.0, 
-"Wh": 3600.0, 
-"Whr": 3600.0, 
-"kWh": 3600000.0, 
-"kWhr": 3600000.0, 
-"MWh": 3600000000.0, 
-"MWhr": 3600000000.0, 
-"GWh": 3600000000000.0, 
-"GWhr": 3600000000000.0, 
-"GJ": 1000000000.0, 
-"Btu": 1055.056, 
-"MBtu": 1055056000.0, 
-"MMBtu": 1055056000.0, 
-"kBtu": 1055056.0, 
-"cal": 4.1868, 
-"kcal": 4186.8, 
-"erg": 1e-07, 
-"ev": 1.60207e-19, 
-"eV": 1.60207e-19, 
-"keV": 1.60207e-16, 
-"kev": 1.60207e-16, 
-"mev": 1.60207e-13, 
-"meV": 1.60207e-13, 
-"bev": 1.60207e-10, 
-"beV": 1.60207e-10, 
-"therm": 105505600.0, 
-"therms": 105505600.0, 
-"quad": 1.055056e+18, 
-"quads": 1.055056e+18}, 
-
-"POWER":{
-"W": 1.0, 
-"hp": 745.7, 
-"ton": 3516.852, 
-"tons": 3516.852, 
-"microW": 1e-06, 
-"milliW": 0.001, 
-"kW": 1000.0, 
-"MW": 1000000.0, 
-"MegaW": 1000000.0, 
-"gW": 1000000000.0, 
-"gigaW": 1000000000.0}, 
-
-"VISCOSITY-DYNAMIC":{
-"poise": 0.1, 
-"centipoise": 0.001, 
-"micropoise": 1e-07, 
-"cp": 0.001, 
-"Reyn": 6894.7}, 
-
-"VISCOSITY-KINEMATIC":{
-"Stoke": 0.0001, 
-"centiStoke": 1e-06}, 
-
-"ANGLES":{
-"radian": 1.0, 
-"radians": 1.0, 
-"rad": 1.0, 
-"deg": 0.017453293, 
-"degree": 0.017453293, 
-"degrees": 0.017453293, 
-"°": 0.017453293, 
-"rev": 6.28318530718, 
-"revs": 6.28318530718, 
-"revolutions": 6.28318530718, 
-"minute": 0.000290888, 
-"quadrant": 1.5707963, 
-"cycle": 6.28318530718, 
-"cycles": 6.28318530718}, 
-
-"CHARGE":{
-"Coulomb": 1.0, 
-"Faraday": 96517.844, 
-"Abcoulomb": 10.0}, 
-
-"ELECTRICAL CAPACITANCE":{
-"Farad": 1.0, 
-"pFarad": 1e-12, 
-"pF": 1e-12}, 
-
-"DIPOLE MOMENT":{
-"Debye": 3.33564e-30},
-
-"CURRENT":{
-"Amp": 1.0, 
-"Ampere": 1.0, 
-"A": 1.0}, 
-
-"ELECTRICAL RESISTANCE":{
-"ohm": 1.0, 
-"kohm": 1000.0},
-
-"ELECTROMOTIVE FORCE":{
-"Volt": 1.0, 
-"millivolt": 0.001, 
-"kV": 1000.0, 
-"MegaVolt": 1000000.0, 
-"v": 1.0}, 
-
-"INDUCTANCE":{
-"Henry": 1.0},
-
-"NON DIMENSIONAL":{
-"-": 1.0, "space": 1.0, 
-"Percent": 0.01, 
-"%": 0.01, 
-"person": 1.0, 
-"persons": 1.0, 
-"ppm": 1e-06, 
-"ppb": 1e-09, 
-"any": 1.0}, 
-
-"MAGNETIC FLUX DENSITY":{
-"Gauss": 0.0001, 
-"G": 0.0001, 
-"Tesla": 1.0, 
-"T": 1.0}, 
-
-"MAGNETIC FLUX":{
-"Maxwell": 1e-08, 
-"Mx": 1e-08, 
-"Weber": 1.0, 
-"Wb": 1.0}, 
-
-"MAGNETIC FIELD STRENGTH":{
-"Oersted": 79.5774715459, 
-"Oe": 79.5774715459}, 
-
-"ILLUMINANCE":{
-"lm": 1.0}, 
-
-"ILLUMINANCE FLUX":{
-"lux": 1.0, 
-"ftcndl": 10.763910417, 
-"mcndl": 1.0}, 
-
-"CONSTANTS":{
-"&NA": ["Avogadro's constant", "6.022169e26", "1/kmol", "6.022169e26", "1/lbmol"], 
-"&h_NH3": ["Ammonia (gas) enthalpy of formation (25C, 77F)", "-46190", "kJ/kmol", "-1.985812E+04", "Btu/lbmol"], 
-"&e": ["Electron charge", "1.6021917e-19", "Coulomb", "1.6021917e-19", "Coulomb"], 
-"&h_C2H4": ["Ethylene enthalpy of formation (25C, 77F)", "52280", "kJ/kmol", "2.247635E+04", "Btu/lbmol"], 
-"&g": ["Gravitational acceleration (sea level)", "9.807", "m/s^2", "3.217520E+01", "ft/s^2"], 
-"&F": ["Faraday's constant", "9.648670E7", "Coulomb/kmol", "4.376563E7", "Coulomb/lbmol"], 
-"&gc": ["Gravitational constant", "6.6732e-11", "N-m^2/kg^2", "3.3224e-11", "lb_f-ft^2/lb_m^2"], 
-"&h_CH2": ["Acetylene enthalpy of formation (25C, 77F)", "226730", "kJ/kmol", "9.747635E+04", "Btu/lbmol"], 
-"&r_e": ["Classical electron radius", "2.817939e-15", "m", "9.245207E-15", "ft"], 
-"&h_C6H6": ["Benzene (gas) enthalpy of formation (25C, 77F)", "82930", "kJ/kmol", "3.565348E+04", "Btu/lbmol"], 
-"&C1": ["Blackbody radiation constant 1", "3.7420e8", "W-micrometer^4/m^2", "1.187e8", "Btu-micrometer^4/hr-ft^2"], 
-"&k": ["Boltzmann's constant", "1.380622e-23", "J/K", "7.269872E-27", "Btu/R"], 
-"&Black": ["the color black", "0", "0"], 
-"&White": ["the color white", "16777215", "16777215"], 
-"&h_C2H5OH_g": ["Ethanol (gas) enthalpy of formation (25C, 77F)", "-235310", "kJ/kmol", "-1.011650E+05", "Btu/lbmol"], 
-"&epsilon_o": ["Permittivity of free space", "8.85418782e-12", "Farads/m", "2.698756E-12", "Farads/ft"], 
-"&true": ["true# and false# are used in logic tests", "1", "1"], 
-"&false": ["true# and false# are used in logic tests", "0", "0"], 
-"&e\\Me": ["Electron charge to mass ratio", "1.7588028e11", "Coulomb/kg", "7.977796E+10", "Coulomb/lb_m"], 
-"&C2": ["Blackbody radiation constant 2", "1.4388e4", "micrometer-K", "2.5897e4", "micrometer-R"], 
-"&h_C2H5OH_l": ["Ethanol (liq) enthalpy of formation (25C, 77F)", "-277690", "kJ/kmol", "-1.193852E+05", "Btu/lbmol"], 
-"&Me": ["Electron rest mass", "9.109558e-31", "kg", "2.008314E-30", "lb_m"], 
-"&Red": ["red", "255", "255"], 
-"&C3": ["Blackbody radiation constant 3", "2897.7", "micrometer-K", "5215.6", "micrometer-R"], 
-"&h_C8H18_l": ["n-Octane (liq) enthalpy of formation (25C, 77F)", "-249950", "kJ/kmol", "-1.074591E+05", "Btu/lbmol"], 
-"&h_CH3OH_l": ["Methanol (liq) enthalpy of formation (25C, 77F)", "-238660", "kJ/kmol", 
-"&-1.026053E+05", "Btu/lbmol"], 
-"&h_C8H18_g": ["n-Octane (gas) enthalpy of formation (25C, 77F)", "-208450", "kJ/kmol", "-8.961737E+04", "Btu/lbmol"], 
-"&T_zero": ["T_zero# + C (or F) = K (or R)", "273.15", "K", "459.67", "R"], 
-"&Mn": ["Neutron rest mass", "1.674920e-27", "kg", "3.692567E-27", "lb_m"], 
-"&Po": ["Normal atmospheric pressure", "101.325", "kPa", "1.469594E+01", "psia"], 
-"&R_inf": ["Rydberg constant", "1.097373e7", "1/m", "3.344793E+06", "1/ft"], 
-"&h_C3H6_g": ["Propylene (gas) enthalpy of formation (25C, 77F)", "-20410", "kJ/kmol", "-8.774720E+03", "Btu/lbmol"], 
-"&Mp": ["Proton rest mass", "1.672614e-27", "kg", "3.687483E-27", "lb_m"], 
-"&h": ["Planck's constant", "6.62606957e-34", "J-s", "6.2803013E-37", "Btu-s"], 
-"&Vo": ["Volume of ideal gas, standard conditions", "2.24136e1", "m^3/kmol", "3.590314E+02", "ft^3/lbmol"], 
-"&Blue": ["the color blue", "16711680", "16711680"], 
-"&R": ["Gas constant", "8.31434", "kJ/kmol-K", "1.985846", "Btu/lbmol-R"], 
-"&SndSpeed": ["speed of sound in dry air at 0 C and 1 atm", "331.36", "m/s", "1089", "ft/s"], 
-"&sigma": ["Stefan-Boltzmann constant", "5.670373e-8", "W/m^2-K^4", "1.71229479E-09", "Btu/hr-ft^2-R^4"], 
-"&h_CH3OH_g": ["Methanol (gas) enthalpy of formation (25C, 77F)", "-200670", "kJ/kmol", "-8.627257E+04", "Btu/lbmol"], 
-"&h_H2O2": ["Hydrogen peroxide (gas) enthalpy of formation (25C, 77F)", "-136310", "kJ/kmol", "-5.860275E+04", "Btu/lbmol"], 
-"&G_sc": ["Solar constant", "1367", "W/m^2", "433", "Btu/ft^2-hr"], 
-"&h_fg_water": ["Enthalpy of vaporization of water (25C, 77F)", "2441.5", "kJ/kg", "1.049656E+03", "Btu/lb_m"], 
-"&U": ["Unified atomic mass unit", "1.660531e-27", "kg", "3.660845E-27", "lb_m"], 
-"&Yellow": ["the color yellow", "65535", "65535"], 
-"&C": ["Speed of light in a vacuum", "2.9979250e8", "m/s", "9.835712E+08", "ft/s"], 
-"&Green": ["the color green", "65280", "65280"], 
-"&pi": ["pi", "3.14159265359", "-", "3.14159265359", "-"], 
-"&muo": ["Permeability of free space", "0.00000125663705", "N/amp^2", "2.825032E-07", "lbf/amp^2"],
-"^": ["traditional exponent operator","**"]
-}
+    "LENGTH": {
+        "m": 1.0,
+        "meter": 1.0,
+        "metre": 1.0,
+        "Angstrom": 1e-10,
+        "nm": 1e-09,
+        "ft": 0.3048,
+        "dm": 0.1,
+        "in": 0.0254,
+        "inch": 0.0254,
+        "mm": 0.001,
+        "micron": 1e-06,
+        "micrometer": 1e-06,
+        "\u00c2\u00b5m": 1e-06,
+        "nanometer": 1e-09,
+        "millimeter": 0.001,
+        "cm": 0.01,
+        "km": 1000.0,
+        "yd": 0.9144,
+        "yard": 0.9144,
+        "mi": 1609.344,
+        "mile": 1609.344,
+        "miles": 1609.344,
+        "fathom": 1.8288,
+        "mil": 2.54e-05,
+        "rod": 5.0292,
+        "furlong": 201.168,
+        "league": 5556.0,
+        "hectometer": 100.0
+    },
+    "MASS": {
+        "kg": 1.0,
+        "lbm": 0.453592374,
+        "lb_m": 0.453592374,
+        "g": 0.001,
+        "ton": 907.184749,
+        "grain": 6.4799e-05,
+        "mg": 1e-06,
+        "oz": 0.028349523,
+        "ozm": 0.028349523,
+        "slug": 14.593881,
+        "stone": 6.350293236,
+        "amu": 1.660531e-27,
+        "\u00c2\u00b5g": 1e-09,
+        "microgram": 1e-09,
+        "mt": 1000.0,
+        "tonne": 1000.0
+    },
+    "MOLES": {
+        "kgmole": 1.0,
+        "kgmol": 1.0,
+        "kmole": 1.0,
+        "kmol": 1.0,
+        "lbmole": 0.453592374,
+        "lbmol": 0.453592374,
+        "gmole": 0.001,
+        "gmol": 0.001,
+        "mole": 0.001,
+        "mol": 0.001
+    },
+    "TIME": {
+        "s": 1.0,
+        "sec": 1.0,
+        "second": 1.0,
+        "min": 60.0,
+        "minute": 60.0,
+        "h": 3600.0,
+        "hr": 3600.0,
+        "hour": 3600.0,
+        "day": 86400.0,
+        "days": 86400.0,
+        "week": 604800.0,
+        "weeks": 604800.0,
+        "fortnight": 1209600.0,
+        "year": 31556952.0,
+        "yr": 31556952.0,
+        "years": 31556952.0,
+        "millisec": 0.001,
+        "\u00c2\u00b5sec": 1e-06,
+        "microsec": 1e-06
+    },
+    "FREQUENCY": {
+        "cps": 1.0,
+        "cpm": 0.016666667,
+        "Bq": 1.0,
+        "ci": 37000000000.0,
+        "Hz": 1.0
+    },
+    "TEMPERATURE": {
+        "K": 1.0,
+        "C": 1.0,
+        "R": 0.55555556,
+        "F": 0.55555556,
+        "\u00c2\u00b0C": 1.0,
+        "\u00c2\u00b0F": 0.55555556
+    },
+    "TEMP. DIFFERENCE": {
+        "DELTAK": 1.0,
+        "DELTAC": 1.0,
+        "DELTAF": 0.55555556,
+        "DELTAR": 0.55555556
+    },
+    "VELOCITY": {
+        "mph": 0.44704,
+        "knot": 0.51444,
+        "m/s": 1.0,
+        "km/s": 0.001,
+        "ft/s": 0.3048,
+        "kph": 0.2777778,
+        "km/h": 0.2777778
+    },
+    "AREA": {
+        "sqm": 1.0,
+        "sqcm": 0.0001,
+        "sqft": 0.09290304,
+        "sqin": 0.00064516,
+        "acre": 4046.856,
+        "hectare": 10000.0,
+        "barn": 1e-28
+    },
+    "VOLUME": {
+        "gal": 0.0037854118,
+        "gallon": 0.0037854118,
+        "l": 0.001,
+        "Bu": 0.03523007016688,
+        "ml": 1e-06,
+        "milliliter": 1e-06,
+        "\u00c2\u00b5l": 1e-09,
+        "microliter": 1e-09,
+        "liter": 0.001,
+        "quart": 0.0009463264,
+        "oz": 2.9572702e-05,
+        "ozv": 2.9572702e-05,
+        "pint": 0.000473163,
+        "bbl": 0.1589873
+    },
+    "VOLUMETRIC FLOW": {
+        "cfm": 0.00047194744,
+        "gph": 1.051503e-06,
+        "gpm": 6.30902e-05
+    },
+    "FORCE": {
+        "N": 1.0,
+        "kN": 1000.0,
+        "lbf": 4.448222,
+        "lb_f": 4.448222,
+        "dyne": 1e-05,
+        "kgf": 9.80665,
+        "kg_f": 9.80665
+    },
+    "PRESSURE": {
+        "Pa": 1.0,
+        "milliPa": 0.001,
+        "microPa": 1e-06,
+        "\u00c2\u00b5Pa": 1e-06,
+        "kPa": 1000.0,
+        "MPa": 1000000.0,
+        "GPa": 1000000000.0,
+        "gigaPa": 1000000000.0,
+        "bar": 100000.0,
+        "milliBar": 100.0,
+        "atm": 101325.0,
+        "psia": 6894.75788958,
+        "psi": 6894.75788958,
+        "ksi": 6894757.88958,
+        "psig": 6894.75788958,
+        "psf": 47.88055555,
+        "mmH2O": 9.80665,
+        "mH2O": 9806.65,
+        "mmHg": 133.3224,
+        "inHg": 3386.388,
+        "torr": 133.3224,
+        "inH2O": 249.088,
+        "in.H2O": 249.088,
+        "ftH2O": 2989.057
+    },
+    "ENERGY": {
+        "J": 1.0,
+        "milliJ": 0.001,
+        "kJ": 1000.0,
+        "MJ": 1000000.0,
+        "Wh": 3600.0,
+        "Whr": 3600.0,
+        "kWh": 3600000.0,
+        "kWhr": 3600000.0,
+        "MWh": 3600000000.0,
+        "MWhr": 3600000000.0,
+        "GWh": 3600000000000.0,
+        "GWhr": 3600000000000.0,
+        "GJ": 1000000000.0,
+        "Btu": 1055.056,
+        "MBtu": 1055056000.0,
+        "MMBtu": 1055056000.0,
+        "kBtu": 1055056.0,
+        "cal": 4.1868,
+        "kcal": 4186.8,
+        "erg": 1e-07,
+        "ev": 1.60207e-19,
+        "eV": 1.60207e-19,
+        "keV": 1.60207e-16,
+        "kev": 1.60207e-16,
+        "mev": 1.60207e-13,
+        "meV": 1.60207e-13,
+        "bev": 1.60207e-10,
+        "beV": 1.60207e-10,
+        "therm": 105505600.0,
+        "therms": 105505600.0,
+        "quad": 1.055056e+18,
+        "quads": 1.055056e+18
+    },
+    "POWER": {
+        "W": 1.0,
+        "hp": 745.7,
+        "ton": 3516.852,
+        "tons": 3516.852,
+        "microW": 1e-06,
+        "milliW": 0.001,
+        "kW": 1000.0,
+        "MW": 1000000.0,
+        "MegaW": 1000000.0,
+        "gW": 1000000000.0,
+        "gigaW": 1000000000.0
+    },
+    "VISCOSITY-DYNAMIC": {
+        "poise": 0.1,
+        "centipoise": 0.001,
+        "micropoise": 1e-07,
+        "cp": 0.001,
+        "Reyn": 6894.7
+    },
+    "VISCOSITY-KINEMATIC": {
+        "Stoke": 0.0001,
+        "centiStoke": 1e-06
+    },
+    "ANGLES": {
+        "radian": 1.0,
+        "radians": 1.0,
+        "rad": 1.0,
+        "deg": 0.017453293,
+        "degree": 0.017453293,
+        "degrees": 0.017453293,
+        "\u00c2\u00b0": 0.017453293,
+        "rev": 6.28318530718,
+        "revs": 6.28318530718,
+        "revolutions": 6.28318530718,
+        "minute": 0.000290888,
+        "quadrant": 1.5707963,
+        "cycle": 6.28318530718,
+        "cycles": 6.28318530718
+    },
+    "CHARGE": {
+        "Coulomb": 1.0,
+        "Faraday": 96517.844,
+        "Abcoulomb": 10.0
+    },
+    "ELECTRICAL CAPACITANCE": {
+        "Farad": 1.0,
+        "pFarad": 1e-12,
+        "pF": 1e-12,
+        "J/sqV": 1.0
+    },
+    "DIPOLE MOMENT": {
+        "Debye": 3.33564e-30
+    },
+    "CURRENT": {
+        "Amp": 1.0,
+        "Ampere": 1.0,
+        "A": 1.0
+    },
+    "ELECTRICAL RESISTANCE": {
+        "ohm": 1.0,
+        "kohm": 1000.0
+    },
+    "ELECTROMOTIVE FORCE": {
+        "Volt": 1.0,
+        "millivolt": 0.001,
+        "kV": 1000.0,
+        "MegaVolt": 1000000.0,
+        "v": 1.0
+    },
+    "INDUCTANCE": {
+        "Henry": 1.0
+    },
+    "NON DIMENSIONAL": {
+        "-": 1.0,
+        "space": 1.0,
+        "Percent": 0.01,
+        "%": 0.01,
+        "person": 1.0,
+        "persons": 1.0,
+        "ppm": 1e-06,
+        "ppb": 1e-09,
+        "any": 1.0
+    },
+    "MAGNETIC FLUX DENSITY": {
+        "Gauss": 0.0001,
+        "G": 0.0001,
+        "Tesla": 1.0,
+        "T": 1.0
+    },
+    "MAGNETIC FLUX": {
+        "Maxwell": 1e-08,
+        "Mx": 1e-08,
+        "Weber": 1.0,
+        "Wb": 1.0
+    },
+    "MAGNETIC FIELD STRENGTH": {
+        "Oersted": 79.5774715459,
+        "Oe": 79.5774715459
+    },
+    "ILLUMINANCE": {
+        "lm": 1.0
+    },
+    "ILLUMINANCE FLUX": {
+        "lux": 1.0,
+        "ftcndl": 10.763910417,
+        "mcndl": 1.0
+    },
+    "CONSTANTS": {
+        "&NA": [
+            "Avogadro's constant",
+            "6.022169e26",
+            "1/kmol",
+            "6.022169e26",
+            "1/lbmol"
+        ],
+        "&h_NH3": [
+            "Ammonia (gas) enthalpy of formation (25C, 77F)",
+            "-46190",
+            "kJ/kmol",
+            "-1.985812E+04",
+            "Btu/lbmol"
+        ],
+        "&e": [
+            "Electron charge",
+            "1.6021917e-19",
+            "Coulomb",
+            "1.6021917e-19",
+            "Coulomb"
+        ],
+        "&h_C2H4": [
+            "Ethylene enthalpy of formation (25C, 77F)",
+            "52280",
+            "kJ/kmol",
+            "2.247635E+04",
+            "Btu/lbmol"
+        ],
+        "&g": [
+            "Gravitational acceleration (sea level)",
+            "9.807",
+            "m/s^2",
+            "3.217520E+01",
+            "ft/s^2"
+        ],
+        "&F": [
+            "Faraday's constant",
+            "9.648670E7",
+            "Coulomb/kmol",
+            "4.376563E7",
+            "Coulomb/lbmol"
+        ],
+        "&gc": [
+            "Gravitational constant",
+            "6.6732e-11",
+            "N-m^2/kg^2",
+            "3.3224e-11",
+            "lb_f-ft^2/lb_m^2"
+        ],
+        "&h_CH2": [
+            "Acetylene enthalpy of formation (25C, 77F)",
+            "226730",
+            "kJ/kmol",
+            "9.747635E+04",
+            "Btu/lbmol"
+        ],
+        "&r_e": [
+            "Classical electron radius",
+            "2.817939e-15",
+            "m",
+            "9.245207E-15",
+            "ft"
+        ],
+        "&h_C6H6": [
+            "Benzene (gas) enthalpy of formation (25C, 77F)",
+            "82930",
+            "kJ/kmol",
+            "3.565348E+04",
+            "Btu/lbmol"
+        ],
+        "&C1": [
+            "Blackbody radiation constant 1",
+            "3.7420e8",
+            "W-micrometer^4/m^2",
+            "1.187e8",
+            "Btu-micrometer^4/hr-ft^2"
+        ],
+        "&k": [
+            "Boltzmann's constant",
+            "1.380622e-23",
+            "J/K",
+            "7.269872E-27",
+            "Btu/R"
+        ],
+        "&Black": [
+            "the color black",
+            "0",
+            "0"
+        ],
+        "&White": [
+            "the color white",
+            "16777215",
+            "16777215"
+        ],
+        "&h_C2H5OH_g": [
+            "Ethanol (gas) enthalpy of formation (25C, 77F)",
+            "-235310",
+            "kJ/kmol",
+            "-1.011650E+05",
+            "Btu/lbmol"
+        ],
+        "&epsilon_o": [
+            "Permittivity of free space",
+            "8.85418782e-12",
+            "Farads/m",
+            "2.698756E-12",
+            "Farads/ft"
+        ],
+        "&true": [
+            "true# and false# are used in logic tests",
+            "1",
+            "1"
+        ],
+        "&false": [
+            "true# and false# are used in logic tests",
+            "0",
+            "0"
+        ],
+        "&e\\Me": [
+            "Electron charge to mass ratio",
+            "1.7588028e11",
+            "Coulomb/kg",
+            "7.977796E+10",
+            "Coulomb/lb_m"
+        ],
+        "&C2": [
+            "Blackbody radiation constant 2",
+            "1.4388e4",
+            "micrometer-K",
+            "2.5897e4",
+            "micrometer-R"
+        ],
+        "&h_C2H5OH_l": [
+            "Ethanol (liq) enthalpy of formation (25C, 77F)",
+            "-277690",
+            "kJ/kmol",
+            "-1.193852E+05",
+            "Btu/lbmol"
+        ],
+        "&Me": [
+            "Electron rest mass",
+            "9.109558e-31",
+            "kg",
+            "2.008314E-30",
+            "lb_m"
+        ],
+        "&Red": [
+            "red",
+            "255",
+            "255"
+        ],
+        "&C3": [
+            "Blackbody radiation constant 3",
+            "2897.7",
+            "micrometer-K",
+            "5215.6",
+            "micrometer-R"
+        ],
+        "&h_C8H18_l": [
+            "n-Octane (liq) enthalpy of formation (25C, 77F)",
+            "-249950",
+            "kJ/kmol",
+            "-1.074591E+05",
+            "Btu/lbmol"
+        ],
+        "&h_CH3OH_l": [
+            "Methanol (liq) enthalpy of formation (25C, 77F)",
+            "-238660",
+            "kJ/kmol",
+            "&-1.026053E+05",
+            "Btu/lbmol"
+        ],
+        "&h_C8H18_g": [
+            "n-Octane (gas) enthalpy of formation (25C, 77F)",
+            "-208450",
+            "kJ/kmol",
+            "-8.961737E+04",
+            "Btu/lbmol"
+        ],
+        "&T_zero": [
+            "T_zero# + C (or F) = K (or R)",
+            "273.15",
+            "K",
+            "459.67",
+            "R"
+        ],
+        "&Mn": [
+            "Neutron rest mass",
+            "1.674920e-27",
+            "kg",
+            "3.692567E-27",
+            "lb_m"
+        ],
+        "&Po": [
+            "Normal atmospheric pressure",
+            "101.325",
+            "kPa",
+            "1.469594E+01",
+            "psia"
+        ],
+        "&R_inf": [
+            "Rydberg constant",
+            "1.097373e7",
+            "1/m",
+            "3.344793E+06",
+            "1/ft"
+        ],
+        "&h_C3H6_g": [
+            "Propylene (gas) enthalpy of formation (25C, 77F)",
+            "-20410",
+            "kJ/kmol",
+            "-8.774720E+03",
+            "Btu/lbmol"
+        ],
+        "&Mp": [
+            "Proton rest mass",
+            "1.672614e-27",
+            "kg",
+            "3.687483E-27",
+            "lb_m"
+        ],
+        "&h": [
+            "Planck's constant",
+            "6.62606957e-34",
+            "J-s",
+            "6.2803013E-37",
+            "Btu-s"
+        ],
+        "&Vo": [
+            "Volume of ideal gas, standard conditions",
+            "2.24136e1",
+            "m^3/kmol",
+            "3.590314E+02",
+            "ft^3/lbmol"
+        ],
+        "&Blue": [
+            "the color blue",
+            "16711680",
+            "16711680"
+        ],
+        "&R": [
+            "Gas constant",
+            "8.31434",
+            "kJ/kmol-K",
+            "1.985846",
+            "Btu/lbmol-R"
+        ],
+        "&SndSpeed": [
+            "speed of sound in dry air at 0 C and 1 atm",
+            "331.36",
+            "m/s",
+            "1089",
+            "ft/s"
+        ],
+        "&sigma": [
+            "Stefan-Boltzmann constant",
+            "5.670373e-8",
+            "W/m^2-K^4",
+            "1.71229479E-09",
+            "Btu/hr-ft^2-R^4"
+        ],
+        "&h_CH3OH_g": [
+            "Methanol (gas) enthalpy of formation (25C, 77F)",
+            "-200670",
+            "kJ/kmol",
+            "-8.627257E+04",
+            "Btu/lbmol"
+        ],
+        "&h_H2O2": [
+            "Hydrogen peroxide (gas) enthalpy of formation (25C, 77F)",
+            "-136310",
+            "kJ/kmol",
+            "-5.860275E+04",
+            "Btu/lbmol"
+        ],
+        "&G_sc": [
+            "Solar constant",
+            "1367",
+            "W/m^2",
+            "433",
+            "Btu/ft^2-hr"
+        ],
+        "&h_fg_water": [
+            "Enthalpy of vaporization of water (25C, 77F)",
+            "2441.5",
+            "kJ/kg",
+            "1.049656E+03",
+            "Btu/lb_m"
+        ],
+        "&U": [
+            "Unified atomic mass unit",
+            "1.660531e-27",
+            "kg",
+            "3.660845E-27",
+            "lb_m"
+        ],
+        "&Yellow": [
+            "the color yellow",
+            "65535",
+            "65535"
+        ],
+        "&C": [
+            "Speed of light in a vacuum",
+            "2.9979250e8",
+            "m/s",
+            "9.835712E+08",
+            "ft/s"
+        ],
+        "&Green": [
+            "the color green",
+            "65280",
+            "65280"
+        ],
+        "&pi": [
+            "pi",
+            "3.14159265359",
+            "-",
+            "3.14159265359",
+            "-"
+        ],
+        "&muo": [
+            "Permeability of free space",
+            "0.00000125663705",
+            "N/amp^2",
+            "2.825032E-07",
+            "lbf/amp^2"
+        ],
+        "^": [
+            "traditional exponent operator",
+            "**"
+        ]
+    }
 }

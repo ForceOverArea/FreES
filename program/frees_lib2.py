@@ -253,7 +253,7 @@ def solve_line(line:str, vals={}, target_dx=1E-20):
     line_info = eqn_parser(line, vals)
 
     if line_info.too_many_unknowns:
-        return f"Skipped unsolvable line due to too many unknowns: \n   {line}" # line is unsolvable due to too many unknowns.
+        return f"Skipped unsolvable line due to too many unknowns: \n\t{line}" # line is unsolvable due to too many unknowns.
 
     if line_info.unsolvable:
         return None
@@ -269,7 +269,7 @@ def solve_line(line:str, vals={}, target_dx=1E-20):
         if line_info.conditional:
             print(f"\n\n------------------------------------\n\nIF FLAG: condition is {line_info.satisfied}")
             if not line_info.satisfied:
-                return f"Skipped line due to unsatisfied condition: {line}"
+                return f"Skipped line due to unsatisfied condition: \n\t{line}"
             else:
                 pass
 
