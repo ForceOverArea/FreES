@@ -1,25 +1,27 @@
 # FreES internal function library. Version 2.
 # Grant Christiansen Jan. 2022
 
-# This version is specifically intended for 
-# development purposes with (ideally) more
-# declarative programming even at the cost of 
-# performance drops.
-
-
 from re import findall, IGNORECASE
 from time import time
 from json import load
 from math import sin, cos, tan, sinh, cosh, tanh, asin, acos, atan, log10, log, exp, pi
 
+from numpy import var
+
 
 class soln:
     """Wrapper for solution info returned by solver function."""
-    def __init__(self, soln, duration, percent_err=None, key_var=False):
+    def __init__(self, soln:dict, duration:float, percent_err=None, suppressed_vars=[]):
         self.soln = soln
+        self.suppressed_vars = suppressed_vars
         self.percent_err = percent_err
         self.duration = duration  
-        self.key_var = key_var
+
+    def suppress_var(self, variable:str):
+        self.suppressed_vars.append(variable)
+
+    def focused(self):
+        return { i:self.soln[i] for i in self.soln if i not in self.suppressed_vars}
 
 
 def f_range(start, stop, steps=8):
@@ -72,9 +74,9 @@ def default_function_toolkit():
         "ln":log,
         "exp":exp,
         "convert":convert,
-        "iTube":I_tube,
-        "iRect":I_rect,
-        "iUChan":I_u_channel
+        "ITube":I_tube,
+        "IRect":I_rect,
+        "IUChan":I_u_channel
     }
 
 
@@ -113,44 +115,17 @@ def iter_solve(func:str, condition:float, var="x", vals={}, left_search_bound=1E
     return soln({var: x}, time()-start, percent_err=100*abs(f(x)-condition)/condition)
 
 
-def iter_solve2(func:str, condition:float, var="x", vals={}, left_search_bound=1E20, right_search_bound=-1E20, target_dx=1E-20, steps=8):
-    """A more declarative approach to iterative solving. Approximately 4-5x slower than 'iter_solve', but much easier to understand."""
-
-    start = time()
-
-    def f(x): return eval(func, uar(vals, {var: x}))
-    def e(x): return abs(f(x) - condition)
-    def ime(some_list): return some_list.index(min(some_list))
-
-    dmn = f_range(left_search_bound, right_search_bound, steps)
-    crit_index = ime([e(x) for x in dmn[1:-2]])
-    dx = abs(dmn[0]-dmn[1])
-    
-    if dx > target_dx:
-        return iter_solve2(
-            func = func, 
-            condition = condition,
-            var = var,
-            vals = vals,
-            left_search_bound = dmn[crit_index-1],
-            right_search_bound = dmn[crit_index+1],
-            target_dx = target_dx,
-            steps = steps
-            )
-    else:
-        x = dmn[crit_index]
-        return soln({var: x}, time()-start, percent_err=100*abs(f(x)-condition)/condition)
-
-
 class eqn_parser:
 
     def __init__(self, equation:str, knowns:dict):
         self.knowns = knowns
-        self.equation = equation
+        self.equation = equation.replace(";","")
         self.vars = self.vf(self.equation)
         self.exprs = self.equation.split("!")[0].split("=")
         self.not_an_equation = len(self.exprs) != 2
         self.is_comment = self.equation.startswith("#")
+        self.suppressed = ";" in equation
+
 
         if len(self.exprs) == 2:
 
@@ -170,17 +145,12 @@ class eqn_parser:
                         self.l_bound = min(args[1:])
                         self.r_bound = max(args[1:])
 
+
                     else:
                         self.bound_var = None
                         self.l_bound = None
                         self.r_bound = None
 
-
-                    if "key" in flag:
-                        self.key_var = True
-
-                    else:
-                        self.key_var = False
 
                     if "if" in flag:
                         self.conditional = True
@@ -213,7 +183,6 @@ class eqn_parser:
                 self.bound_var = None
                 self.l_bound = None
                 self.r_bound = None
-                self.key_var = False
                 self.conditional = False
                 self.satisfied = False
                 
@@ -249,61 +218,82 @@ class eqn_parser:
 
 def solve_line(line:str, vals={}, target_dx=1E-20):
     """Parse an equation as a string and solve for a single unknown variable after subbing in known values."""
+    # This is the function that rearranges information for iter_solve() using info from eqn_parser
+
 
     line_info = eqn_parser(line, vals)
 
-    if line_info.too_many_unknowns:
+
+    if line_info.too_many_unknowns and not line_info.is_comment:
         return f"Skipped unsolvable line due to too many unknowns: \n\t{line}" # line is unsolvable due to too many unknowns.
+
 
     if line_info.unsolvable:
         return None
 
+
+    # Solve for unknown on left side
     elif len(line_info.lhs_vars) == 1 and len(line_info.rhs_vars) == 0:
+        unknown = line_info.lhs_vars[0]
+        function = line_info.exprs[0]
+        condition = eval(line_info.exprs[1].split("!")[0], vals)
     
-        if line_info.bound_var == line_info.lhs_vars[0]:
-            bounds = line_info.l_bound, line_info.r_bound
-            print(f"\n\n------------------------------------\n\nBOUND FLAG: {bounds}")
-        else:
-            bounds = [-1E20, 1E20]
 
-        if line_info.conditional:
-            print(f"\n\n------------------------------------\n\nIF FLAG: condition is {line_info.satisfied}")
-            if not line_info.satisfied:
-                return f"Skipped line due to unsatisfied condition: \n\t{line}"
-            else:
-                pass
-
-        return iter_solve(
-            func = line_info.exprs[0],
-            condition = eval(line_info.exprs[1].split("!")[0], vals),
-            var = line_info.lhs_vars[0],
-            vals = vals,
-            left_search_bound = float(bounds[0]),
-            right_search_bound = float(bounds[1]),
-            target_dx = target_dx
-        )
-
+    # Solve for unknown on right side
     elif len(line_info.rhs_vars) == 1 and len(line_info.lhs_vars) == 0:
+        unknown = line_info.rhs_vars[0]
+        function = line_info.exprs[1].split("!")[0]
+        condition = eval(line_info.exprs[0], vals)
 
-        if line_info.bound_var == line_info.rhs_vars[0]:
-            bounds = line_info.l_bound, line_info.r_bound
-            print(f"\n\n------------------------------------\n\nBOUND FLAG: {bounds}")
-        else:
-            bounds = [-1E20, 1E20]
-
-        return iter_solve(
-            func = line_info.exprs[1].split("!")[0],
-            condition = eval(line_info.exprs[0], vals),
-            var = line_info.rhs_vars[0],
-            vals = vals,
-            left_search_bound = float(bounds[0]),
-            right_search_bound = float(bounds[1]),
-            target_dx = target_dx
-        )
 
     else:
         return None
 
+    
+    # Prevent float division by zero error via approximation
+    if condition == 0:
+        condition = 1E-323
+
+
+    # Apply bounds if necessary
+    if line_info.bound_var == unknown:
+        bounds = line_info.l_bound, line_info.r_bound
+        print(f"\n\n------------------------------------\n\nBOUND FLAG: {bounds}")
+    else:
+        bounds = [-1E20, 1E20]
+
+
+    # Apply conditions if necessary
+    if line_info.conditional:
+        print(f"\n\n------------------------------------\n\nIF FLAG: condition is {line_info.satisfied}")
+        if not line_info.satisfied:
+            return f"Skipped line due to unsatisfied condition: \n\t{line}"
+        else:
+            pass
+
+
+    # Solve the line for the unknown value
+    solution = iter_solve(
+        func = function,
+        condition = condition,
+        var = unknown,
+        vals = vals,
+        left_search_bound = float(bounds[0]),
+        right_search_bound = float(bounds[1]),
+        target_dx = target_dx
+    )
+
+
+    if solution.soln[unknown] in bounds:
+        return f"Equation has solution on or beyond edge of domain: \n\t{line}"
+
+
+    if line_info.suppressed:
+        solution.suppress_var(unknown)
+
+
+    return solution
+    
 
 class frees:
     """FreES engine for solving systems of equations."""
@@ -315,6 +305,7 @@ class frees:
             self.exprs = self.exprs.replace(const, default_constant_toolkit()[const][1])
 
         print(f"\n\n------------------------------------\n\nSYSTEM:\n{self.exprs}")
+        
         self.lines = self.exprs.strip().split("\n")
         self.accuracy = accuracy
         self.iter_solve = iter_solve
@@ -340,6 +331,7 @@ class frees:
                     self.warnings.append(line_soln)
 
                 elif line_soln != None:
+                    self.soln.suppressed_vars += line_soln.suppressed_vars
                     self.soln.soln.update(line_soln.soln)
                     self.soln.duration += line_soln.duration
 

@@ -1,5 +1,6 @@
 # FreES GUI toolkit library. Version 2
 
+from copy import deepcopy
 from time import sleep
 from frees_lib2 import frees, f_range
 from json import load, dump
@@ -8,7 +9,6 @@ from os import system as sh
 from tkinter import * 
 from tkinter.filedialog import askopenfilename
 from tkinter.scrolledtext import ScrolledText
-# from tkinter.ttk import Button, Label, Entry
 
 
 class frees_app:
@@ -284,38 +284,55 @@ class solution_window:
             soln_cols = settings["SOLN_COLS"]
             accuracy = float(settings["ACCURACY"])
 
-        soln = frees(self.parent.fetch_eqns(), accuracy)
+        soln = deepcopy(frees(self.parent.fetch_eqns(), accuracy))
+       
         try:
             soln.solve()
 
             duration = f"Solved in {round(soln.soln.duration, 5)} seconds."
+            
             values = [f"{item} = {round(soln.soln.soln[item], dec_places)}" for item in soln.soln.soln]
+            focused_vals = [f"{item} = {round(soln.soln.soln[item], dec_places)}" for item in soln.soln.focused()]
+
             if len(soln.warnings) > 0:
-                warnings = "=========\n" + '\n'.join(soln.warnings)
+                warnings = "===========================\n" + '\n'.join(soln.warnings)
             else:
                 warnings = ""
 
-                
             def sublists(items:list, n:int):
-                # looping till length l
                 for i in range(0, len(items), n): 
                     yield items[i:i + n]
 
             gridified = "\n\n".join(["\t\t".join(i) for i in list(sublists(values, soln_cols))])
+            focused_gridified = "\n\n".join(["\t\t".join(i) for i in list(sublists(focused_vals, soln_cols))])
             
-            soln_text = f"{duration}\n=========\n\n{gridified}\n\n{warnings}"
+            self.soln_text = [
+                f"{duration}\n===========================\n\n{focused_gridified}\n\n{warnings}",
+                f"{duration}\n===========================\n\n{gridified}\n\n{warnings}"
+                ]
         
         except Exception as e:
-            soln_text = f"Could not solve due to the following Python error: \n\n{str(e)}" 
+            self.soln_text = [
+                f"Could not solve due to the following Python error: \n\n{str(e)}", 
+                f"Could not solve due to the following Python error: \n\n{str(e)}" 
+            ]
 
         self.titlebar = Label(self.window, text = "Solution:\n=========")
-        self.swtext = Label(self.window, text = soln_text)
+        self.swtext = Label(self.window, text = self.soln_text[0])
         self.close_button = Button(self.window, text = "Close", command = self.close)
+        self.output_choice = IntVar()
+        self.show_all = Checkbutton(self.window, text = "Show All", variable = self.output_choice, onvalue = 1, offvalue = 0, command = self.change_output)
 
         self.titlebar       .grid(column = 0, row = 0)
-        self.swtext         .grid(column = 0, row = 1, padx = 10, pady = 10)
-        self.close_button   .grid(column = 0, row = 2, pady = 10)
+        self.show_all       .grid(column = 1, row = 0, padx = 10)
+        self.swtext         .grid(columnspan = 2, row = 1, padx = 10, pady = 10)
+        self.close_button   .grid(columnspan = 2, row = 2, pady = 10)
 
+
+    def change_output(self):
+        sel = self.output_choice.get()
+        self.swtext.configure(text = self.soln_text[sel])
+        
 
     def close(self):
         self.window.destroy()
@@ -359,21 +376,26 @@ class plot_window:
         self.plot_button = Button(plot_menu, text = "Create Plot", command = self.plot)
 
         # Grid spacing
-        self.dstart_label   .grid(column = 0, row = 0, sticky="nsew")
-        self.dend_label     .grid(column = 0, row = 1, sticky="nsew")
-        self.dstep_label    .grid(column = 0, row = 2, sticky="nsew")
-        self.iv_label       .grid(column = 2, row = 0, sticky="nsew")
-        self.dv_label       .grid(column = 2, row = 1, sticky="nsew")
-        self.t_label        .grid(column = 2, row = 2, sticky="nsew")
+        self.t_label        .grid(column = 0, row = 0, sticky="nsew")
+        self.title          .grid(column = 1, row = 0, sticky="nsew")
 
-        self.dmn_start      .grid(column = 1, row = 0, sticky="nsew")
-        self.dmn_end        .grid(column = 1, row = 1, sticky="nsew")
-        self.dmn_size       .grid(column = 1, row = 2, sticky="nsew")
-        self.ind_var        .grid(column = 3, row = 0, sticky="nsew")
-        self.dep_var        .grid(column = 3, row = 1, sticky="nsew")
-        self.title          .grid(column = 3, row = 2, sticky="nsew")
+        self.iv_label       .grid(column = 0, row = 1, sticky="nsew")
+        self.ind_var        .grid(column = 1, row = 1, sticky="nsew")
+        
+        self.dv_label       .grid(column = 0, row = 2, sticky="nsew")
+        self.dep_var        .grid(column = 1, row = 2, sticky="nsew")
 
-        self.plot_button.grid(columnspan = 4, row = 3, sticky="nsew")
+        self.dstart_label   .grid(column = 0, row = 3, sticky="nsew")
+        self.dmn_start      .grid(column = 1, row = 3, sticky="nsew")
+        
+        self.dend_label     .grid(column = 0, row = 4, sticky="nsew")
+        self.dmn_end        .grid(column = 1, row = 4, sticky="nsew")
+        
+        self.dstep_label    .grid(column = 0, row = 5, sticky="nsew")
+        self.dmn_size       .grid(column = 1, row = 5, sticky="nsew")         
+        
+        
+        self.plot_button.grid(columnspan = 4, row = 7, sticky="nsew")
 
 
     def plot(self):
